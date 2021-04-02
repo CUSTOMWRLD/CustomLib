@@ -1,0 +1,8 @@
+name: CustomLib
+version: ${project.version}
+api-version: 1.13
+authors: [ oHate, BitCrack, FreakingChicken ]
+main: com.customwrld.customlib.CustomLib
+softdepend: [ PlaceholderAPI, WorldEdit ]
+load: STARTUP
+description: CustomLib for CustomWrld

@@ -1,0 +1,13 @@
+SERVER_NAME: "Default"
+
+DISCORD:
+  TOKEN: ""
+
+MONGO:
+  HOST: 127.0.0.1
+  PORT: 27017
+  DATABASE: "CustomWrld"
+
+RABBITMQ:
+  HOST: 127.0.0.1
+  PORT: 5672
