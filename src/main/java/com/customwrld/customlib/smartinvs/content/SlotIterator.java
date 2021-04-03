@@ -13,6 +13,8 @@ public interface SlotIterator {
 
     SlotIterator set(ClickableItem item);
 
+    SlotIterator reset();
+
     SlotIterator previous();
 
     SlotIterator next();
@@ -82,6 +84,13 @@ public interface SlotIterator {
             if (canPlace())
                 contents.set(row, column, item);
 
+            return this;
+        }
+
+        @Override
+        public SlotIterator reset() {
+            row = 0;
+            column = 0;
             return this;
         }
 

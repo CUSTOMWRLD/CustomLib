@@ -4,10 +4,13 @@ import com.customwrld.customlib.util.CC;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 
 public class HologramTextComponent extends AbstractHologramComponent {
@@ -24,7 +27,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
         this.armorStand = new EntityArmorStand(((CraftWorld)location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
 
         armorStand.setCustomNameVisible(text.length() >= 1);
-        armorStand.setCustomName(new ChatMessage(CC.translate(null, text)));
+        armorStand.setCustomName(CraftChatMessage.fromStringOrNull(CC.translate(null, text)));
 
 //        // "net.minecraft.server.v1_10_R1.EntityArmorStand#c(NBTTagCompound)" is a 1.10 method. Find the correct name for the version you are using.
 //        NBTTagCompound tag = armorStand.getHandle;
@@ -35,7 +38,10 @@ public class HologramTextComponent extends AbstractHologramComponent {
         armorStand.setMarker(true);
         armorStand.setInvisible(true);
 
-        viewers.forEach(player -> NMSUtil.sendPacket(player, new PacketPlayOutSpawnEntityLiving(armorStand)));
+        viewers.forEach(player -> {
+            NMSUtil.sendPacket(player, new PacketPlayOutSpawnEntityLiving(armorStand));
+            NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
+        });
         return 0.27;
     }
 
