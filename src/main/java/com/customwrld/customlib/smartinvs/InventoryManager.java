@@ -195,6 +195,8 @@ public class InventoryManager {
                     .forEach(listener -> ((InventoryListener<InventoryCloseEvent>) listener).accept(e));
 
             if (inv.isCloseable()) {
+                inv.getProvider().close(p, contents.get(p));
+
                 e.getInventory().clear();
 
                 inventories.remove(p);
@@ -216,6 +218,8 @@ public class InventoryManager {
                     .filter(listener -> listener.getType() == PlayerQuitEvent.class)
                     .forEach(listener -> ((InventoryListener<PlayerQuitEvent>) listener).accept(e));
 
+            inv.getProvider().close(p, contents.get(p));
+
             inventories.remove(p);
             contents.remove(p);
         }
@@ -227,6 +231,7 @@ public class InventoryManager {
                         .filter(listener -> listener.getType() == PluginDisableEvent.class)
                         .forEach(listener -> ((InventoryListener<PluginDisableEvent>) listener).accept(e));
 
+                inv.getProvider().close(player, contents.get(player));
                 inv.close(player);
             });
 
