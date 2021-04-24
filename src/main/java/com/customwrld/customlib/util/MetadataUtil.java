@@ -44,6 +44,24 @@ public class MetadataUtil {
     }
 
     /***
+     * Gets an byte under the given metadata key, or returns the default value.
+     * @param metadatable {@link Metadatable} to get the byte from
+     * @param key Metadata key to look for
+     * @param owningPlugin {@link Plugin} that owns the metadata
+     * @param defaultValue The default value
+     * @param set Should the default value be put in that metadata if none was found?
+     * @return Retrieved byte, default value otherwise
+     */
+    public static byte getByte(Metadatable metadatable,
+                               String key,
+                               @NotNull Plugin owningPlugin,
+                               int defaultValue,
+                               boolean set) {
+
+        return (byte) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
+    }
+
+    /***
      * Gets an integer under the given metadata key, or returns the default value.
      * @param metadatable {@link Metadatable} to get the integer from
      * @param key Metadata key to look for
@@ -53,10 +71,10 @@ public class MetadataUtil {
      * @return Retrieved integer, default value otherwise
      */
     public static int getInteger(Metadatable metadatable,
-                                               String key,
-                                               @NotNull Plugin owningPlugin,
-                                               int defaultValue,
-                                               boolean set) {
+                                 String key,
+                                 @NotNull Plugin owningPlugin,
+                                 int defaultValue,
+                                 boolean set) {
 
         return (int) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
@@ -71,10 +89,10 @@ public class MetadataUtil {
      * @return Retrieved long, default value otherwise
      */
     public static long getLong(Metadatable metadatable,
-                                         String key,
-                                         @NotNull Plugin owningPlugin,
-                                         long defaultValue,
-                                         boolean set) {
+                               String key,
+                               @NotNull Plugin owningPlugin,
+                               long defaultValue,
+                               boolean set) {
 
         return (long) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
@@ -89,10 +107,10 @@ public class MetadataUtil {
      * @return Retrieved short, default value otherwise
      */
     public static short getShort(Metadatable metadatable,
-                                           String key,
-                                           @NotNull Plugin owningPlugin,
-                                           short defaultValue,
-                                           boolean set) {
+                                 String key,
+                                 @NotNull Plugin owningPlugin,
+                                 short defaultValue,
+                                 boolean set) {
 
         return (short) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
@@ -107,10 +125,10 @@ public class MetadataUtil {
      * @return Retrieved float, default value otherwise
      */
     public static float getFloat(Metadatable metadatable,
-                                           String key,
-                                           @NotNull Plugin owningPlugin,
-                                           float defaultValue,
-                                           boolean set) {
+                                 String key,
+                                 @NotNull Plugin owningPlugin,
+                                 float defaultValue,
+                                 boolean set) {
 
         return (float) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
@@ -125,12 +143,30 @@ public class MetadataUtil {
      * @return Retrieved double, default value otherwise
      */
     public static double getDouble(Metadatable metadatable,
-                                             String key,
-                                             @NotNull Plugin owningPlugin,
-                                             double defaultValue,
-                                             boolean set) {
+                                   String key,
+                                   @NotNull Plugin owningPlugin,
+                                   double defaultValue,
+                                   boolean set) {
 
         return (double) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
+    }
+
+    /***
+     * Gets an boolean under the given metadata key, or returns the default value.
+     * @param metadatable {@link Metadatable} to get the boolean from
+     * @param key Metadata key to look for
+     * @param owningPlugin {@link Plugin} that owns the metadata
+     * @param defaultValue The default value
+     * @param set Should the default value be put in that metadata if none was found?
+     * @return Retrieved integer, default value otherwise
+     */
+    public static boolean getBoolean(Metadatable metadatable,
+                                     String key,
+                                     @NotNull Plugin owningPlugin,
+                                     int defaultValue,
+                                     boolean set) {
+
+        return (boolean) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
 
     /***
@@ -143,10 +179,10 @@ public class MetadataUtil {
      * @return Retrieved {@link String}, default value otherwise
      */
     public static String getString(Metadatable metadatable,
-                                             String key,
-                                             @NotNull Plugin owningPlugin,
-                                             @Nullable String defaultValue,
-                                             boolean set) {
+                                   String key,
+                                   @NotNull Plugin owningPlugin,
+                                   @Nullable String defaultValue,
+                                   boolean set) {
 
         return String.valueOf(retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set));
     }
@@ -161,10 +197,10 @@ public class MetadataUtil {
      * @return Retrieved character, default value otherwise
      */
     public static char getCharacter(Metadatable metadatable,
-                                   String key,
-                                   @NotNull Plugin owningPlugin,
-                                   char defaultValue,
-                                   boolean set) {
+                                    String key,
+                                    @NotNull Plugin owningPlugin,
+                                    char defaultValue,
+                                    boolean set) {
 
         return (char) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
@@ -181,11 +217,11 @@ public class MetadataUtil {
      * @return Retrieved value, default value otherwise
      */
     public static <T> T getValue(Metadatable metadatable,
-                                           String key,
-                                           @NotNull Plugin owningPlugin,
-                                           @Nullable T defaultValue,
-                                           @NotNull Class<T> type,
-                                           boolean set) {
+                                 String key,
+                                 @NotNull Plugin owningPlugin,
+                                 @Nullable T defaultValue,
+                                 @NotNull Class<T> type,
+                                 boolean set) {
 
         Object value = retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
         if(type.isInstance(value)) { return type.cast(value); } else { return defaultValue; }
