@@ -55,7 +55,7 @@ public class MetadataUtil {
     public static byte getByte(Metadatable metadatable,
                                String key,
                                @NotNull Plugin owningPlugin,
-                               int defaultValue,
+                               byte defaultValue,
                                boolean set) {
 
         return (byte) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
@@ -163,7 +163,7 @@ public class MetadataUtil {
     public static boolean getBoolean(Metadatable metadatable,
                                      String key,
                                      @NotNull Plugin owningPlugin,
-                                     int defaultValue,
+                                     boolean defaultValue,
                                      boolean set) {
 
         return (boolean) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
