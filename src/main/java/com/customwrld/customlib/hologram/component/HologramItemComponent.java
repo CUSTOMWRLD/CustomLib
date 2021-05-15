@@ -22,7 +22,7 @@ public class HologramItemComponent extends AbstractHologramComponent {
     }
 
     @Override
-    public double create(Location location, List<Player> viewers) {
+    public void create(Location location, List<Player> viewers) {
         this.armorStand = new EntityArmorStand(((CraftWorld)location.getWorld()).getHandle(), location.getX(), location.getY() - 0.05, location.getZ());
         this.entityItem = new EntityItem(((CraftWorld)location.getWorld()).getHandle(), location.getX(), location.getY() - 0.05, location.getZ());
 
@@ -42,8 +42,6 @@ public class HologramItemComponent extends AbstractHologramComponent {
             NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
             NMSUtil.sendPacket(player, new PacketPlayOutMount(armorStand));
         });
-
-        return 0.65;
     }
 
     @Override
@@ -55,6 +53,11 @@ public class HologramItemComponent extends AbstractHologramComponent {
     @Override
     public void update(Player player) {
         setItemStack(itemStack, player);
+    }
+
+    @Override
+    public double getHeight() {
+        return 0.65;
     }
 
     @Override

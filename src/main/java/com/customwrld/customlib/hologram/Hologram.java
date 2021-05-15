@@ -1,8 +1,12 @@
 package com.customwrld.customlib.hologram;
 
 import com.customwrld.customlib.hologram.component.AbstractHologramComponent;
+import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
+import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
 import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -19,7 +23,29 @@ public class Hologram {
         this.children = new ArrayList<>();
         this.viewers = new ArrayList<>();
         this.location = location;
-        render();
+    }
+
+    public Hologram append(AbstractHologramComponent component) {
+        component.setParent(this);
+        children.add(component);
+        return this;
+    }
+
+    public void render() {
+        Location origin = location.clone();
+        for (AbstractHologramComponent component : children) {
+            component.create(origin, viewers);
+            origin.subtract(0, component.getHeight(), 0);
+        }
+    }
+
+    public void render(Player player) {
+        viewers.add(player);
+        Location origin = location.clone();
+        for (AbstractHologramComponent component : children) {
+            component.create(origin, Collections.singletonList(player));
+            origin.subtract(0, component.getHeight(), 0);
+        }
     }
 
     public void delete(Player player) {
@@ -29,23 +55,12 @@ public class Hologram {
         }
     }
 
-    public Hologram append(AbstractHologramComponent component) {
-        children.add(component);
-        return this;
-    }
-
-    public void render() {
+    public void setLocation(Location location) {
         Location origin = location.clone();
         for (AbstractHologramComponent component : children) {
-            origin.subtract(0, component.create(origin, viewers), 0);
+            component.setLocation(origin);
+            origin.subtract(0, component.getHeight(), 0);
         }
     }
 
-    public void render(Player player) {
-        viewers.add(player);
-        Location origin = location.clone();
-        for (AbstractHologramComponent component : children) {
-            origin.subtract(0, component.create(origin, Collections.singletonList(player)), 0);
-        }
-    }
 }

@@ -23,7 +23,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
     }
 
     @Override
-    public double create(Location location, List<Player> viewers) {
+    public void create(Location location, List<Player> viewers) {
         this.armorStand = new EntityArmorStand(((CraftWorld)location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
 
         armorStand.setCustomNameVisible(text.length() >= 1);
@@ -42,7 +42,6 @@ public class HologramTextComponent extends AbstractHologramComponent {
             NMSUtil.sendPacket(player, new PacketPlayOutSpawnEntityLiving(armorStand));
             NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
         });
-        return 0.27;
     }
 
     @Override
@@ -56,8 +55,13 @@ public class HologramTextComponent extends AbstractHologramComponent {
     }
 
     @Override
+    public double getHeight() {
+        return 0.27;
+    }
+
+    @Override
     public void setLocation(Location location) {
-        armorStand.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        armorStand.setLocation(location.getX(), location.getY() - 0.4, location.getZ(), location.getYaw(), location.getPitch());
         this.getParent().viewers.forEach(player -> NMSUtil.sendPacket(player, new PacketPlayOutEntityTeleport(armorStand)));
     }
 
