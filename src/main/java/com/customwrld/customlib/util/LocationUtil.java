@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -66,11 +67,11 @@ public class LocationUtil {
     }
 
     /*
-    TODO Reverse the calculation, so the origin is the first argument.
+    TODO Modify the calculation, so the origin is the first argument.
      This might take a bit, as all the usages of this function also need to have their arguments switched.
      */
     public static Location offsetLocation(Location other, Location origin) {
-        return additiveInverseLocation(other.clone().subtract(origin));
+        return other.clone().subtract(origin);
     }
 
     /***
@@ -135,6 +136,77 @@ public class LocationUtil {
         to.setYaw(from.getYaw());
 
         return to;
+    }
+
+    /***
+     * Finds the highest {@link org.bukkit.block.Block} on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
+     * See also: {@link LocationUtil#getHighestLocationInRange(Location, int, int)} and {@link LocationUtil#getHighestYInRange(Location, int, int)}.
+     * @param origin
+     * @param xSize
+     * @param zSize
+     * @return
+     */
+    public static Block getHighestBlockInRange(Location origin, int xSize, int zSize) {
+        World world = origin.getWorld();
+        Block highestBlock = origin.getBlock();
+        for(int x = origin.getBlockX(); x < origin.getBlockX() + xSize; x++) {
+            for(int z = origin.getBlockZ(); z < origin.getBlockZ() + zSize; z++) {
+                Block currentBlock = world.getHighestBlockAt(x, z);
+                int currentY = currentBlock.getLocation().getBlockY();
+
+                if(currentY > highestBlock.getLocation().getBlockY()) { highestBlock = currentBlock; }
+                if(currentY >= world.getMaxHeight()) { break; }
+            }
+        }
+
+        return highestBlock;
+    }
+
+    /***
+     * Finds the highest {@link Location} on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
+     * Returns a clone of the origin {@link Location} if it can't find any other {@link Location}.
+     * @param origin
+     * @param xSize
+     * @param zSize
+     * @return
+     */
+    public static Location getHighestLocationInRange(Location origin, int xSize, int zSize) {
+        return getHighestBlockInRange(origin, xSize, zSize).getLocation();
+    }
+
+    /***
+     * Finds the Y value of the highest block on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
+     * This might be more useful if you don't care about the X and Z axis, otherwise see {@link LocationUtil#getHighestLocationInRange(Location, int, int)}.
+     * @param origin
+     * @param xSize
+     * @param zSize
+     * @return
+     */
+    public static int getHighestYInRange(Location origin, int xSize, int zSize) {
+        World world = origin.getWorld();
+        int highestY = origin.getBlockY();
+        for(int x = origin.getBlockX(); x < origin.getBlockX() + xSize; x++) {
+            for(int z = origin.getBlockZ(); z < origin.getBlockZ() + zSize; z++) {
+                int currentY = world.getHighestBlockYAt(x, z);
+
+                if(currentY > highestY) { highestY = currentY; }
+                if(currentY >= world.getMaxHeight()) { break; }
+            }
+        }
+
+        return highestY;
+    }
+
+    public static Location zero(@NotNull World world) {
+        return new Location(world, 0, 0, 0, 0, 0);
+    }
+
+    public static Location minValue(@NotNull World world) {
+        return new Location(world, Double.MIN_VALUE, Double.MIN_VALUE, Double.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+    }
+
+    public static Location maxValue(@NotNull World world) {
+        return new Location(world, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
 }
