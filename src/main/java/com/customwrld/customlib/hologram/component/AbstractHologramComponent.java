@@ -23,4 +23,6 @@ public abstract class AbstractHologramComponent {
 
     public abstract void setLocation(Location location);
 
+    public abstract AbstractHologramComponent clone(Hologram newParent);
+
 }
