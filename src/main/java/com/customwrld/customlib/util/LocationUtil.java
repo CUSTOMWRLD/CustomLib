@@ -66,6 +66,16 @@ public class LocationUtil {
         return location.clone().set(-location.getX(), -location.getY(), -location.getZ());
     }
 
+    /***
+     * Returns a {@link Location} whose coordinates are only the numbers after the decimal place of the original {@link Location}.
+     * This means that all the coordinates range from 0 (inclusive) to 1 (inclusive).
+     *
+     * Useful when dealing with spaces inside a block.
+     */
+    public static Location fractionalLocation(Location location) {
+        return location.clone().set(location.getX() % 1, location.getY() % 1, location.getZ() % 1);
+    }
+
     /*
     TODO Modify the calculation, so the origin is the first argument.
      This might take a bit, as all the usages of this function also need to have their arguments switched.
@@ -77,8 +87,6 @@ public class LocationUtil {
     /***
      * Based on {@link Location#equals(Object)}, but checks only two coordinates, X and Z.
      * Doesn't check if angles match, use {@link LocationUtil#equals2DIncludeAngles(Location, Location)} for that purpose.
-     * @param location
-     * @param other
      */
     public static boolean equals2D(@NotNull Location location, @NotNull Location other) {
         if (location.getClass() != other.getClass()) { return false; }
@@ -100,8 +108,6 @@ public class LocationUtil {
     /***
      * Based on {@link Location#equals(Object)}, but checks only two coordinates, X and Z.
      * Checks if angles match, use {@link LocationUtil#equals2D(Location, Location)} if you wish not to.
-     * @param location
-     * @param other
      */
     public static boolean equals2DIncludeAngles(@NotNull Location location, @NotNull Location other) {
         if (location.getClass() != other.getClass()) { return false; }
@@ -125,9 +131,6 @@ public class LocationUtil {
     /***
      * Allows you to copy angles (Pitch & Yaw) from one {@link Location} to another.
      * Both modifies the "to" {@link Location} and returns the modified location (not a copy) to allow for partial chaining.
-     * @param from {@link Location} to copy angles from
-     * @param to {@link Location} to copy angles to
-     * @return Modified {@link Location}
      */
     public static Location copyAngles(@NotNull Location from, @NotNull Location to) {
         if (from.getClass() != to.getClass()) { return to; }
@@ -141,10 +144,6 @@ public class LocationUtil {
     /***
      * Finds the highest {@link org.bukkit.block.Block} on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
      * See also: {@link LocationUtil#getHighestLocationInRange(Location, int, int)} and {@link LocationUtil#getHighestYInRange(Location, int, int)}.
-     * @param origin
-     * @param xSize
-     * @param zSize
-     * @return
      */
     public static Block getHighestBlockInRange(Location origin, int xSize, int zSize) {
         World world = origin.getWorld();
@@ -165,10 +164,6 @@ public class LocationUtil {
     /***
      * Finds the highest {@link Location} on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
      * Returns a clone of the origin {@link Location} if it can't find any other {@link Location}.
-     * @param origin
-     * @param xSize
-     * @param zSize
-     * @return
      */
     public static Location getHighestLocationInRange(Location origin, int xSize, int zSize) {
         return getHighestBlockInRange(origin, xSize, zSize).getLocation();
@@ -177,10 +172,6 @@ public class LocationUtil {
     /***
      * Finds the Y value of the highest block on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
      * This might be more useful if you don't care about the X and Z axis, otherwise see {@link LocationUtil#getHighestLocationInRange(Location, int, int)}.
-     * @param origin
-     * @param xSize
-     * @param zSize
-     * @return
      */
     public static int getHighestYInRange(Location origin, int xSize, int zSize) {
         World world = origin.getWorld();
@@ -195,6 +186,62 @@ public class LocationUtil {
         }
 
         return highestY;
+    }
+
+    public static Location getHighestLocationFromMultiple(Location... locations) {
+        Location highest = locations[0];
+        for(Location location : locations) {
+            if(highest.getY() > location.getY()) { highest = location; }
+        }
+        return highest;
+    }
+
+    /***
+     * Works similar to {@link Location#toHighestLocation()}, but includes a few changes.
+     * <ul>
+     *  <li>Checks for touching/neighbouring blocks (Good for making holograms not appear stuck in the side of a block).
+     *  <ul>
+     *      <li>If the location is on a side between two blocks, it gets the highest location of these two blocks.
+     *      <li>If the location is in a corner, it gets the highest location of all four surrounding blocks.
+     *      <li>If the location doesn't meet any of the above requirements, it gets the highest location of itself.
+     *  </ul>
+     *  <li>Keeps decimal places (For resulting locations based on other than the provided one, it may seem like it acts like an offset relative to the block).
+     * </ul>
+     */
+    public static Location toHighestLocationAccurate(Location location) {
+
+        Location highestLocation = location;
+
+        boolean onSideX = MathUtil.isIntegral(location.getX());
+        boolean onSideZ = MathUtil.isIntegral(location.getZ());
+
+        boolean onCorner = onSideX && onSideZ;
+
+        //Is on a corner
+        if(onCorner) {
+            highestLocation = getHighestLocationFromMultiple(
+                    location.clone().subtract(-1, 0, -1).toHighestLocation(),   //BL
+                    location.clone().subtract(-1, 0, 0).toHighestLocation(),    //TL
+                    location.toHighestLocation(),                                       //TR
+                    location.clone().subtract(0, 0, -1).toHighestLocation());   //BR
+        }
+
+        //Is on side (Across X axis)
+        if(onSideX) {
+            highestLocation = getHighestLocationFromMultiple(
+                    location.clone().subtract(-1, 0, 0).toHighestLocation(),
+                    location.toHighestLocation());
+        }
+
+        //Is on side (Across Z axis)
+        if(onSideZ) {
+            highestLocation = getHighestLocationFromMultiple(
+                    location.clone().subtract(0, 0, -1).toHighestLocation(),
+                    location.toHighestLocation());
+        }
+
+        return highestLocation.set(location.getX(), highestLocation.getY(), location.getZ());
+
     }
 
     public static Location zero(@NotNull World world) {
