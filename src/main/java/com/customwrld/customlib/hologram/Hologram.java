@@ -63,4 +63,13 @@ public class Hologram {
         }
     }
 
+    public Hologram clone() {
+        Hologram clone = new Hologram(location);
+        for(AbstractHologramComponent component : children) {
+            clone.append(component.clone(clone));
+        }
+        clone.viewers.addAll(this.viewers);
+        return clone;
+    }
+
 }

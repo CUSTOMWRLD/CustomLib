@@ -1,5 +1,6 @@
 package com.customwrld.customlib.hologram.component;
 
+import com.customwrld.customlib.hologram.Hologram;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;
@@ -64,6 +65,16 @@ public class HologramItemComponent extends AbstractHologramComponent {
     public void setLocation(Location location) {
         armorStand.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         this.getParent().viewers.forEach(player -> NMSUtil.sendPacket(player, new PacketPlayOutEntityTeleport(armorStand)));
+    }
+
+    @Override
+    public AbstractHologramComponent clone(Hologram newParent) {
+        HologramItemComponent clone = new HologramItemComponent(itemStack);
+        if(this.location != null) { clone.location = this.location.clone(); }
+        clone.armorStand = this.armorStand;
+        clone.entityItem = this.entityItem;
+        clone.setParent(newParent);
+        return clone;
     }
 
     public void setItemStack(ItemStack itemStack) {

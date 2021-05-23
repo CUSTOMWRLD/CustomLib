@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -64,11 +66,21 @@ public class LocationUtil {
         return location.clone().set(-location.getX(), -location.getY(), -location.getZ());
     }
 
+    /*
+    TODO Modify the calculation, so the origin is the first argument.
+     This might take a bit, as all the usages of this function also need to have their arguments switched.
+     */
     public static Location offsetLocation(Location other, Location origin) {
-        return additiveInverseLocation(other.clone().subtract(origin));
+        return other.clone().subtract(origin);
     }
 
-    public static boolean equals2D(Location location, Location other) {
+    /***
+     * Based on {@link Location#equals(Object)}, but checks only two coordinates, X and Z.
+     * Doesn't check if angles match, use {@link LocationUtil#equals2DIncludeAngles(Location, Location)} for that purpose.
+     * @param location
+     * @param other
+     */
+    public static boolean equals2D(@NotNull Location location, @NotNull Location other) {
         if (location.getClass() != other.getClass()) { return false; }
 
         World world = location.getWorld();
@@ -85,7 +97,13 @@ public class LocationUtil {
         return true;
     }
 
-    public static boolean equals2DIncludeAngles(Location location, Location other) {
+    /***
+     * Based on {@link Location#equals(Object)}, but checks only two coordinates, X and Z.
+     * Checks if angles match, use {@link LocationUtil#equals2D(Location, Location)} if you wish not to.
+     * @param location
+     * @param other
+     */
+    public static boolean equals2DIncludeAngles(@NotNull Location location, @NotNull Location other) {
         if (location.getClass() != other.getClass()) { return false; }
 
         World world = location.getWorld();
@@ -104,13 +122,91 @@ public class LocationUtil {
         return true;
     }
 
-    public static Location copyAngles(Location from, Location to) {
+    /***
+     * Allows you to copy angles (Pitch & Yaw) from one {@link Location} to another.
+     * Both modifies the "to" {@link Location} and returns the modified location (not a copy) to allow for partial chaining.
+     * @param from {@link Location} to copy angles from
+     * @param to {@link Location} to copy angles to
+     * @return Modified {@link Location}
+     */
+    public static Location copyAngles(@NotNull Location from, @NotNull Location to) {
         if (from.getClass() != to.getClass()) { return to; }
 
         to.setPitch(from.getPitch());
         to.setYaw(from.getYaw());
 
         return to;
+    }
+
+    /***
+     * Finds the highest {@link org.bukkit.block.Block} on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
+     * See also: {@link LocationUtil#getHighestLocationInRange(Location, int, int)} and {@link LocationUtil#getHighestYInRange(Location, int, int)}.
+     * @param origin
+     * @param xSize
+     * @param zSize
+     * @return
+     */
+    public static Block getHighestBlockInRange(Location origin, int xSize, int zSize) {
+        World world = origin.getWorld();
+        Block highestBlock = origin.getBlock();
+        for(int x = origin.getBlockX(); x < origin.getBlockX() + xSize; x++) {
+            for(int z = origin.getBlockZ(); z < origin.getBlockZ() + zSize; z++) {
+                Block currentBlock = world.getHighestBlockAt(x, z);
+                int currentY = currentBlock.getLocation().getBlockY();
+
+                if(currentY > highestBlock.getLocation().getBlockY()) { highestBlock = currentBlock; }
+                if(currentY >= world.getMaxHeight()) { break; }
+            }
+        }
+
+        return highestBlock;
+    }
+
+    /***
+     * Finds the highest {@link Location} on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
+     * Returns a clone of the origin {@link Location} if it can't find any other {@link Location}.
+     * @param origin
+     * @param xSize
+     * @param zSize
+     * @return
+     */
+    public static Location getHighestLocationInRange(Location origin, int xSize, int zSize) {
+        return getHighestBlockInRange(origin, xSize, zSize).getLocation();
+    }
+
+    /***
+     * Finds the Y value of the highest block on a plane with specified size on X and Z axis, origin being the "bottom-left" corner.
+     * This might be more useful if you don't care about the X and Z axis, otherwise see {@link LocationUtil#getHighestLocationInRange(Location, int, int)}.
+     * @param origin
+     * @param xSize
+     * @param zSize
+     * @return
+     */
+    public static int getHighestYInRange(Location origin, int xSize, int zSize) {
+        World world = origin.getWorld();
+        int highestY = origin.getBlockY();
+        for(int x = origin.getBlockX(); x < origin.getBlockX() + xSize; x++) {
+            for(int z = origin.getBlockZ(); z < origin.getBlockZ() + zSize; z++) {
+                int currentY = world.getHighestBlockYAt(x, z);
+
+                if(currentY > highestY) { highestY = currentY; }
+                if(currentY >= world.getMaxHeight()) { break; }
+            }
+        }
+
+        return highestY;
+    }
+
+    public static Location zero(@NotNull World world) {
+        return new Location(world, 0, 0, 0, 0, 0);
+    }
+
+    public static Location minValue(@NotNull World world) {
+        return new Location(world, Double.MIN_VALUE, Double.MIN_VALUE, Double.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+    }
+
+    public static Location maxValue(@NotNull World world) {
+        return new Location(world, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
 }

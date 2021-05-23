@@ -1,5 +1,6 @@
 package com.customwrld.customlib.hologram.component;
 
+import com.customwrld.customlib.hologram.Hologram;
 import com.customwrld.customlib.util.CC;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
@@ -58,6 +59,15 @@ public class HologramTextComponent extends AbstractHologramComponent {
     public void setLocation(Location location) {
         armorStand.setLocation(location.getX(), location.getY() - 0.4, location.getZ(), location.getYaw(), location.getPitch());
         this.getParent().viewers.forEach(player -> NMSUtil.sendPacket(player, new PacketPlayOutEntityTeleport(armorStand)));
+    }
+
+    @Override
+    public AbstractHologramComponent clone(Hologram newParent) {
+        HologramTextComponent clone = new HologramTextComponent(text);
+        if(this.location != null) { clone.location = this.location.clone(); }
+        clone.armorStand = this.armorStand;
+        clone.setParent(newParent);
+        return clone;
     }
 
     public void setText(String text) {
