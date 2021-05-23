@@ -15,11 +15,6 @@ public class AssembleBoardDestroyEvent extends Event implements Cancellable {
     private Player player;
     private boolean cancelled = false;
 
-    /**
-     * Assemble Board Destroy Event.
-     *
-     * @param player who's board got destroyed.
-     */
     public AssembleBoardDestroyEvent(Player player) {
         this.player = player;
     }

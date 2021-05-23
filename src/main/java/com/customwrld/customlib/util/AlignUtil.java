@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlignUtil {
+
     @Getter private static final int chatPixels = 320;
     @Getter private static final int centerPixels = chatPixels / 2;
 

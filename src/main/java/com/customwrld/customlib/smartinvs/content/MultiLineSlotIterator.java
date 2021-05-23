@@ -78,42 +78,38 @@ public class MultiLineSlotIterator implements SlotIterator {
                         switch (yDirection) {
                             case DOWN:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         column--;
-
-                                        if(column == 0) {
-                                            column = xSize - 1; //TODO Test
-                                            row++;
-                                        }
-                                        break;
-                                    case LEFT:
-                                        column = ++column % xSize;
-
                                         if (column == 0) {
-                                            column = 1; //TODO Test
+                                            column = xSize - 1;
                                             row++;
                                         }
-                                        break;
+                                    }
+                                    case LEFT -> {
+                                        column = ++column % xSize;
+                                        if (column == 0) {
+                                            column = 1;
+                                            row++;
+                                        }
+                                    }
                                 }
                                 break;
                             case UP:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         column--;
-
                                         if (column == 0) {
-                                            column = xSize - 1; //TODO Test
+                                            column = xSize - 1;
                                             row--;
                                         }
-                                        break;
-                                    case LEFT:
+                                    }
+                                    case LEFT -> {
                                         column = ++column % xSize;
-
-                                        if(column == 0) {
-                                            column = 1; //TODO Test
+                                        if (column == 0) {
+                                            column = 1;
                                             row--;
                                         }
-                                        break;
+                                    }
                                 }
                         }
                         break;
@@ -121,40 +117,36 @@ public class MultiLineSlotIterator implements SlotIterator {
                         switch (yDirection) {
                             case DOWN:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         row--;
-
                                         if (row == 0) {
-                                            row = ySize - 1; //TODO Test
+                                            row = ySize - 1;
                                             column--;
                                         }
-                                        break;
-                                    case LEFT:
+                                    }
+                                    case LEFT -> {
                                         row--;
-
-                                        if(row == 0) {
-                                            row = ySize - 1; //TODO Test
+                                        if (row == 0) {
+                                            row = ySize - 1;
                                             column++;
                                         }
-                                        break;
+                                    }
                                 }
                                 break;
                             case UP:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         row = ++row % ySize;
-
-                                        if(row == 0) {
+                                        if (row == 0) {
                                             column--;
                                         }
-                                        break;
-                                    case LEFT:
+                                    }
+                                    case LEFT -> {
                                         row = ++row % ySize;
-
                                         if (row == 0) {
                                             column++;
                                         }
-                                        break;
+                                    }
                                 }
                         }
                         break;
@@ -183,41 +175,37 @@ public class MultiLineSlotIterator implements SlotIterator {
                         switch (yDirection) {
                             case DOWN:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         column = ++column % xSize;
-
                                         if (column == 0) {
                                             row++;
                                         }
-                                        break;
-                                    case LEFT:
+                                    }
+                                    case LEFT -> {
                                         column--;
-
-                                        if(column == 0) {
-                                            column = xSize - 1; //TODO Test
+                                        if (column == 0) {
+                                            column = xSize - 1;
                                             row++;
                                         }
-                                        break;
+                                    }
                                 }
                                 break;
                             case UP:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         column = ++column % xSize;
-
-                                        if(column == 0) {
-                                            column = 1; //TODO Test
-                                            row--;
-                                        }
-                                        break;
-                                    case LEFT:
-                                        column--;
-
                                         if (column == 0) {
-                                            column = xSize - 1; //TODO Test
+                                            column = 1;
                                             row--;
                                         }
-                                        break;
+                                    }
+                                    case LEFT -> {
+                                        column--;
+                                        if (column == 0) {
+                                            column = xSize - 1;
+                                            row--;
+                                        }
+                                    }
                                 }
                         }
                         break;
@@ -225,42 +213,36 @@ public class MultiLineSlotIterator implements SlotIterator {
                         switch (yDirection) {
                             case DOWN:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         row = ++row % ySize;
-
                                         if (row == 0) {
-                                            row = 0; //TODO Test
                                             column++;
                                         }
-                                        break;
-                                    case LEFT:
+                                    }
+                                    case LEFT -> {
                                         row = ++row % ySize;
-
-                                        if(row == 0) {
-                                            row = 0; //TODO Test
+                                        if (row == 0) {
                                             column--;
                                         }
-                                        break;
+                                    }
                                 }
                                 break;
                             case UP:
                                 switch (xDirection) {
-                                    case RIGHT:
+                                    case RIGHT -> {
                                         row--;
-
-                                        if(row == 0) {
-                                            row = ySize - 1; //TODO Test
+                                        if (row == 0) {
+                                            row = ySize - 1;
                                             column++;
                                         }
-                                        break;
-                                    case LEFT:
+                                    }
+                                    case LEFT -> {
                                         row--;
-
                                         if (row == 0) {
-                                            row = ySize - 1; //TODO Test
+                                            row = ySize - 1;
                                             column--;
                                         }
-                                        break;
+                                    }
                                 }
                         }
                         break;

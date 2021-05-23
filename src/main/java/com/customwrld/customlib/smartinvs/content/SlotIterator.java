@@ -106,22 +106,20 @@ public interface SlotIterator {
                     this.started = true;
                 } else {
                     switch (type) {
-                        case HORIZONTAL:
+                        case HORIZONTAL -> {
                             column--;
-
                             if (column == 0) {
                                 column = inv.getColumns() - 1;
                                 row--;
                             }
-                            break;
-                        case VERTICAL:
+                        }
+                        case VERTICAL -> {
                             row--;
-
                             if (row == 0) {
                                 row = inv.getRows() - 1;
                                 column--;
                             }
-                            break;
+                        }
                     }
                 }
             }
@@ -142,18 +140,16 @@ public interface SlotIterator {
                     this.started = true;
                 } else {
                     switch (type) {
-                        case HORIZONTAL:
+                        case HORIZONTAL -> {
                             column = ++column % inv.getColumns();
-
                             if (column == 0)
                                 row++;
-                            break;
-                        case VERTICAL:
+                        }
+                        case VERTICAL -> {
                             row = ++row % inv.getRows();
-
                             if (row == 0)
                                 column++;
-                            break;
+                        }
                     }
                 }
             }

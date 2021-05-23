@@ -5,6 +5,7 @@ import org.apache.commons.lang.math.Range;
 import java.util.Random;
 
 public class RangeUtil {
+
     public static int randInt(Random rand, Range range) {
         return (int) (range.getMinimumInteger() + ((range.getMaximumInteger() - range.getMinimumInteger()) * rand.nextDouble()));
     }

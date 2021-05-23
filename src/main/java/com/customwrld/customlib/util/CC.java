@@ -123,7 +123,6 @@ public class CC {
         return color;
     }
 
-    //0.0 - 1.0
     public static ChatColor HSV(float h, float s, float b) {
         return ChatColor.of(Color.getHSBColor(h, s, b));
     }
@@ -178,7 +177,6 @@ public class CC {
     }
 
     public static TextComponent gradientComponent(TextComponent target, Color from, Color to) {
-        //builder.append(base);
         ComponentBuilder builder = new ComponentBuilder().retain(ComponentBuilder.FormatRetention.ALL);
         String text = target.toPlainText();
         int charAmount = text.length();
@@ -188,7 +186,6 @@ public class CC {
     }
 
     private static int gradientComponentInternal(ComponentBuilder builder, TextComponent current, Color from, Color to, int step, int steps) {
-
         String text = current.getText();
 
         for (char c : text.toCharArray()) {

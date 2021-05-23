@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import java.util.*;
 
 public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializable {
+
     protected final String worldName;
 
     protected final int x1;
@@ -409,26 +410,18 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
         }
     }
 
-    public class CuboidIterator implements Iterator<Block> {
-        private World w;
-
-        private int baseX;
-
-        private int baseY;
-
-        private int baseZ;
+    public static class CuboidIterator implements Iterator<Block> {
 
         private int x;
-
         private int y;
-
         private int z;
-
-        private int sizeX;
-
-        private int sizeY;
-
-        private int sizeZ;
+        private final int baseX;
+        private final int baseY;
+        private final int baseZ;
+        private final int sizeX;
+        private final int sizeY;
+        private final int sizeZ;
+        private final World w;
 
         public CuboidIterator(World w, int x1, int y1, int z1, int x2, int y2, int z2) {
             this.w = w;
@@ -459,4 +452,5 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
             throw new UnsupportedOperationException();
         }
     }
+
 }

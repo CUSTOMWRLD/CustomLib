@@ -47,7 +47,6 @@ public class ShapeUtil {
         int centerX = loc.getBlockX();
         int centerY = loc.getBlockY();
         int centerZ = loc.getBlockZ();
-        World w = loc.getWorld();
         int rSquared = r * r;
         for (int y = centerY; y < centerY + h; y++) {
             for (int x = centerX - r; x <= centerX + r; x++) {

@@ -55,11 +55,13 @@ public class NPC {
 
     public void setLocation(Location location) {
         entityNPC.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+
         if (hologram != null) {
             for(AbstractHologramComponent component : hologram.getChildren()) {
                 component.setLocation(location);
             }
         }
+
         updateLoc();
     }
 
@@ -86,12 +88,13 @@ public class NPC {
 
     public void spawn(Player player) throws Exception {
         this.viewers.add(player);
-        CustomLib.getInstance().getHolograms().add(this.hologram);
 
-        setLocation(this.location);
         if(hologram != null) {
+            CustomLib.getCustomLib().getHolograms().add(this.hologram);
             hologram.render(player);
         }
+
+        setLocation(this.location);
 
         NMSUtil.sendPacket(player, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityNPC));
         NMSUtil.sendPacket(player, new PacketPlayOutNamedEntitySpawn(entityNPC));
@@ -112,12 +115,12 @@ public class NPC {
 
         lookAt(player);
 
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(CustomLib.getInstance(), () -> NMSUtil.sendPacket(player, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityNPC)), 20 * (2));
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(CustomLib.getCustomLib(), () -> NMSUtil.sendPacket(player, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityNPC)), 20 * (2));
     }
 
     public void delete(Player player) {
         this.viewers.remove(player);
-        CustomLib.getInstance().getHolograms().remove(this.hologram);
+        CustomLib.getCustomLib().getHolograms().remove(this.hologram);
 
         NMSUtil.sendPacket(player, new PacketPlayOutEntityDestroy(entityId));
         hologram.delete(player);
