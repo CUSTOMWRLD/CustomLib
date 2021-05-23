@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -80,7 +79,7 @@ public class LocationUtil {
      * @param location
      * @param other
      */
-    public static boolean equals2D(@NotNull Location location, @NotNull Location other) {
+    public static boolean equals2D(Location location, Location other) {
         if (location.getClass() != other.getClass()) { return false; }
 
         World world = location.getWorld();
@@ -103,7 +102,7 @@ public class LocationUtil {
      * @param location
      * @param other
      */
-    public static boolean equals2DIncludeAngles(@NotNull Location location, @NotNull Location other) {
+    public static boolean equals2DIncludeAngles(Location location, Location other) {
         if (location.getClass() != other.getClass()) { return false; }
 
         World world = location.getWorld();
@@ -129,7 +128,7 @@ public class LocationUtil {
      * @param to {@link Location} to copy angles to
      * @return Modified {@link Location}
      */
-    public static Location copyAngles(@NotNull Location from, @NotNull Location to) {
+    public static Location copyAngles(Location from, Location to) {
         if (from.getClass() != to.getClass()) { return to; }
 
         to.setPitch(from.getPitch());
@@ -197,15 +196,15 @@ public class LocationUtil {
         return highestY;
     }
 
-    public static Location zero(@NotNull World world) {
+    public static Location zero(World world) {
         return new Location(world, 0, 0, 0, 0, 0);
     }
 
-    public static Location minValue(@NotNull World world) {
+    public static Location minValue(World world) {
         return new Location(world, Double.MIN_VALUE, Double.MIN_VALUE, Double.MIN_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
     }
 
-    public static Location maxValue(@NotNull World world) {
+    public static Location maxValue(World world) {
         return new Location(world, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     }
 
