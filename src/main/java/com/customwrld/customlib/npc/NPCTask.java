@@ -13,11 +13,11 @@ public class NPCTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        CustomLib instance = CustomLib.getInstance();
-        if(instance.getNpcs().isEmpty()) return;
-        for(NPC npc : instance.getNpcs()) {
+        CustomLib customLib = CustomLib.getCustomLib();
+        if(customLib.getNpcs().isEmpty()) return;
+        for(NPC npc : customLib.getNpcs()) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if(instance.getServerUsers().contains(player.getUniqueId())) {
+                if(customLib.getServerUsers().contains(player.getUniqueId())) {
                     boolean canSeeNPC = player.getWorld() == npc.location.getWorld() && player.getLocation().distance(npc.location) <= 32;
                     if (npc.viewers.contains(player) && !canSeeNPC) {
                         npc.delete(player);

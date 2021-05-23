@@ -11,14 +11,12 @@ import com.customwrld.customlib.npc.NPCTask;
 import com.customwrld.customlib.smartinvs.InventoryManager;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import lombok.Getter;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +25,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.security.auth.login.LoginException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,26 +33,28 @@ import java.util.UUID;
 
 public class CustomLib extends JavaPlugin implements Listener {
 
-    public static final Gson GSON = new Gson();
     public static final Type LIST_STRING_TYPE = new TypeToken<List<String>>() {}.getType();
 
-    @Getter private static CustomLib instance;
+    @Getter private static CustomLib customLib;
+    @Getter private Gson prettyGson;
+    @Getter private Gson gson;
     @Getter private ConfigurationFile mainConfig;
     @Getter private Connection rabbitMqConnection;
     @Getter private MongoClient mongoClient;
     @Getter private MongoDatabase mongoDatabase;
-    @Getter private String serverName;
     @Getter private InventoryManager invManager;
-    @Getter private JDA jda;
     @Getter private List<NPC> npcs;
     @Getter private List<Hologram> holograms;
     @Getter private List<UUID> serverUsers;
 
     @Override
     public void onEnable() {
-        instance = this;
+        customLib = this;
+
+        prettyGson = new GsonBuilder().setPrettyPrinting().create();
+        gson = new GsonBuilder().create();
+
         mainConfig = new ConfigurationFile(this, "config");
-        serverName = mainConfig.getString("SERVER_NAME");
 
         for (ClazzCache clazzCache : ClazzCache.values()) {
             try {
@@ -65,7 +64,6 @@ public class CustomLib extends JavaPlugin implements Listener {
             }
         }
 
-        loadJDA();
         connectAQMPClient();
         loadMongo();
 
@@ -73,8 +71,8 @@ public class CustomLib extends JavaPlugin implements Listener {
         holograms = new ArrayList<>();
         serverUsers = new ArrayList<>();
 
-        new NPCTask(instance).run();
-        new HologramTask(instance).run();
+        new NPCTask(customLib).run();
+        new HologramTask(customLib).run();
 
         invManager = new InventoryManager(this);
         invManager.init();
@@ -98,7 +96,7 @@ public class CustomLib extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        CustomLib customLib = CustomLib.getInstance();
+        CustomLib customLib = CustomLib.getCustomLib();
 
         new BukkitRunnable() {
             @Override
@@ -112,18 +110,9 @@ public class CustomLib extends JavaPlugin implements Listener {
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
+        serverUsers.remove(player.getUniqueId());
         npcs.forEach(npc -> npc.delete(player));
         holograms.forEach(hologram -> hologram.delete(player));
-    }
-
-    public void loadJDA() {
-        JDABuilder builder = JDABuilder.create(mainConfig.getString("DISCORD.TOKEN"), GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS);
-
-        try {
-            jda = builder.build();
-        } catch (LoginException exception) {
-            exception.printStackTrace();
-        }
     }
 
     private void loadMongo() {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CollectionsUtil {
+
     public static <T> List<T> genericListToType(List<?> list, Class<T> type) {
         ArrayList<T> convertedList = new ArrayList<>();
         for(Object element : list) {
@@ -21,4 +22,5 @@ public class CollectionsUtil {
         }
         return convertedMap;
     }
+
 }

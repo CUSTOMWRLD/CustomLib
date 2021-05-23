@@ -3,6 +3,7 @@ package com.customwrld.customlib.util;
 import java.util.*;
 
 public class RandomCollection<E> {
+
     private final NavigableMap<Double, E> map = new TreeMap<>();
     private final Random random;
     private double total = 0;

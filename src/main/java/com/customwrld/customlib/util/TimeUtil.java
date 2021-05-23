@@ -8,20 +8,13 @@ import java.util.Date;
 
 public final class TimeUtil {
 
-    private static final String HOUR_FORMAT = "%02d:%02d:%02d";
-    private static final String MINUTE_FORMAT = "%02d:%02d";
-
-    private TimeUtil() {
-        throw new RuntimeException("Cannot instantiate a utility class.");
-    }
-
     public static String millisToTimer(long millis) {
         long seconds = millis / 1000L;
 
         if (seconds > 3600L) {
-            return String.format(HOUR_FORMAT, seconds / 3600L, seconds % 3600L / 60L, seconds % 60L);
+            return String.format("%02d:%02d:%02d", seconds / 3600L, seconds % 3600L / 60L, seconds % 60L);
         } else {
-            return String.format(MINUTE_FORMAT, seconds / 60L, seconds % 60L);
+            return String.format("%02d:%02d", seconds / 60L, seconds % 60L);
         }
     }
 
@@ -38,47 +31,12 @@ public final class TimeUtil {
         return dateFormat.format(date);
     }
 
-    public static Timestamp addDuration(long duration) {
-        return truncateTimestamp(new Timestamp(System.currentTimeMillis() + duration));
-    }
-
-    public static Timestamp truncateTimestamp(Timestamp timestamp) {
-        if (timestamp.toLocalDateTime().getYear() > 2037) {
-            timestamp.setYear(2037);
-        }
-
-        return timestamp;
-    }
-
-    public static Timestamp addDuration(Timestamp timestamp) {
-        return truncateTimestamp(new Timestamp(System.currentTimeMillis() + timestamp.getTime()));
-    }
-
     public static Timestamp fromMillis(long millis) {
         return new Timestamp(millis);
     }
 
     public static Timestamp getCurrentTimestamp() {
         return new Timestamp(System.currentTimeMillis());
-    }
-
-    public static String millisToHMS(long millis) {
-
-        long second = (millis / 1000) % 60;
-        long minute = (millis / (1000 * 60)) % 60;
-        long hour = (millis / (1000 * 60 * 60)) % 24;
-
-        return hour + "h " + minute + "m " + second + "s";
-    }
-
-    public static String millisToDHMS(long millis) {
-
-        long second = (millis / 1000) % 60;
-        long minute = (millis / (1000 * 60)) % 60;
-        long hour = (millis / (1000 * 60 * 60)) % 24;
-        long day = ((((millis / 1000) / 60) / 60) / 24) % 24;
-
-        return day + "d " + hour + "h " + minute + "m " + second + "s";
     }
 
     public static String millisToRoundedTime(long millis) {
@@ -108,4 +66,5 @@ public final class TimeUtil {
             return seconds + " second" + (seconds == 1 ? "" : "s");
         }
     }
+
 }

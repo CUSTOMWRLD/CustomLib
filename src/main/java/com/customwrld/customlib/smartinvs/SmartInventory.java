@@ -68,7 +68,6 @@ public class SmartInventory {
         return handle;
     }
 
-    @SuppressWarnings("unchecked")
     public void close(Player player) {
         listeners.stream()
                 .filter(listener -> listener.getType() == InventoryCloseEvent.class)
@@ -192,7 +191,7 @@ public class SmartInventory {
             if (this.provider == null)
                 throw new IllegalStateException("The provider of the SmartInventory.Builder must be set.");
 
-            InventoryManager manager = this.manager != null ? this.manager : CustomLib.getInstance().getInvManager();
+            InventoryManager manager = this.manager != null ? this.manager : CustomLib.getCustomLib().getInvManager();
 
             if (manager == null)
                 throw new IllegalStateException("The manager of the SmartInventory.Builder must be set, "

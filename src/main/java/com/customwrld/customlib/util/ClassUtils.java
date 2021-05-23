@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class ClassUtils {
+
     public static Collection<Class<?>> getClassesInPackage(Class<?> clazz, String packageName) {
         Set<Class<?>> classes = new HashSet<>();
         for (URL url : ClasspathHelper.forClassLoader(ClasspathHelper.contextClassLoader(),
@@ -29,4 +30,5 @@ public final class ClassUtils {
         }
         return ImmutableSet.copyOf(classes);
     }
+
 }

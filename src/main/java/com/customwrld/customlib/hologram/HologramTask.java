@@ -13,11 +13,11 @@ public class HologramTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        CustomLib instance = CustomLib.getInstance();
-        if(instance.getHolograms().isEmpty()) return;
-        for(Hologram hologram : instance.getHolograms()) {
+        CustomLib customLib = CustomLib.getCustomLib();
+        if(customLib.getHolograms().isEmpty()) return;
+        for(Hologram hologram : customLib.getHolograms()) { // TODO: java.util.ConcurrentModificationException: null
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (instance.getServerUsers().contains(player.getUniqueId())) {
+                if (customLib.getServerUsers().contains(player.getUniqueId())) {
                     boolean canSeeHologram = player.getWorld() == hologram.location.getWorld() && player.getLocation().distance(hologram.location) <= 32;
                     if (hologram.viewers.contains(player) && !canSeeHologram) {
                         hologram.delete(player);

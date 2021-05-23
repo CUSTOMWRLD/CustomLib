@@ -31,13 +31,13 @@ public enum ClazzCache {
     }
 
     public void load() throws ClassLoadException {
-        if (this.clazzType == ClazzType.CLASS) { /* Class */
+        if (this.clazzType == ClazzType.CLASS) {
             try {
                 this.cacheClass = Class.forName(name);
             } catch (ClassNotFoundException e) {
                 throw new ClassLoadException("Class could not be loaded: " + name(), e.getCause());
             }
-        } else if (this.clazzType == ClazzType.METHOD) { /* Method */
+        } else if (this.clazzType == ClazzType.METHOD) {
             try {
                 this.cacheMethod = this.clazz.getMethod(this.name, this.classes);
             } catch (NoSuchMethodException e) {
@@ -47,7 +47,7 @@ public enum ClazzCache {
                     throw new ClassLoadException("Method could not be loaded: " + name(), e.getCause());
                 }
             }
-        } else if (this.clazzType == ClazzType.FIELD) { /* Field */
+        } else if (this.clazzType == ClazzType.FIELD) {
             if (this.name != null && this.name.length() > 0) {
                 try {
                     this.cacheField = this.clazz.getField(this.name);
@@ -60,7 +60,7 @@ public enum ClazzCache {
                     }
                 }
             }
-        } else { /* Constructor */
+        } else {
             try {
                 this.cacheConstructor = this.clazz.getConstructor(this.classes);
             } catch (NoSuchMethodException e) {

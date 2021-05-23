@@ -101,7 +101,6 @@ public class InventoryManager {
             this.contents.put(p, contents);
     }
 
-    @SuppressWarnings("unchecked")
     class InvListener implements Listener {
 
         @EventHandler(priority = EventPriority.LOW)

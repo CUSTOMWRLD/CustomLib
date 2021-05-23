@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 @Builder
 @AllArgsConstructor
 public class ComponentFormatting {
+
     public static final ComponentFormatting NONE = new ComponentFormatting(ChatColor.WHITE, null, false, false, false, false, false);
 
     private ChatColor color;

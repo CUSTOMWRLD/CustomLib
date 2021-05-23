@@ -29,11 +29,6 @@ public class HologramTextComponent extends AbstractHologramComponent {
         armorStand.setCustomNameVisible(text.length() >= 1);
         armorStand.setCustomName(CraftChatMessage.fromStringOrNull(CC.translate(null, text)));
 
-//        // "net.minecraft.server.v1_10_R1.EntityArmorStand#c(NBTTagCompound)" is a 1.10 method. Find the correct name for the version you are using.
-//        NBTTagCompound tag = armorStand.getHandle;
-//        tag.setInt("DisabledSlot", 4144959);
-
-        armorStand.disabledSlots = 4144959;
         armorStand.setNoGravity(true);
         armorStand.setMarker(true);
         armorStand.setInvisible(true);

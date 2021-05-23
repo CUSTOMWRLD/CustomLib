@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -65,21 +64,11 @@ public class LocationUtil {
         return location.clone().set(-location.getX(), -location.getY(), -location.getZ());
     }
 
-    /*
-    TODO Reverse the calculation, so the origin is the first argument.
-     This might take a bit, as all the usages of this function also need to have their arguments switched.
-     */
     public static Location offsetLocation(Location other, Location origin) {
         return additiveInverseLocation(other.clone().subtract(origin));
     }
 
-    /***
-     * Based on {@link Location#equals(Object)}, but checks only two coordinates, X and Z.
-     * Doesn't check if angles match, use {@link LocationUtil#equals2DIncludeAngles(Location, Location)} for that purpose.
-     * @param location
-     * @param other
-     */
-    public static boolean equals2D(@NotNull Location location, @NotNull Location other) {
+    public static boolean equals2D(Location location, Location other) {
         if (location.getClass() != other.getClass()) { return false; }
 
         World world = location.getWorld();
@@ -96,13 +85,7 @@ public class LocationUtil {
         return true;
     }
 
-    /***
-     * Based on {@link Location#equals(Object)}, but checks only two coordinates, X and Z.
-     * Checks if angles match, use {@link LocationUtil#equals2D(Location, Location)} if you wish not to.
-     * @param location
-     * @param other
-     */
-    public static boolean equals2DIncludeAngles(@NotNull Location location, @NotNull Location other) {
+    public static boolean equals2DIncludeAngles(Location location, Location other) {
         if (location.getClass() != other.getClass()) { return false; }
 
         World world = location.getWorld();
@@ -121,14 +104,7 @@ public class LocationUtil {
         return true;
     }
 
-    /***
-     * Allows you to copy angles (Pitch & Yaw) from one {@link Location} to another.
-     * Both modifies the "to" {@link Location} and returns the modified location (not a copy) to allow for partial chaining.
-     * @param from {@link Location} to copy angles from
-     * @param to {@link Location} to copy angles to
-     * @return Modified {@link Location}
-     */
-    public static Location copyAngles(@NotNull Location from, @NotNull Location to) {
+    public static Location copyAngles(Location from, Location to) {
         if (from.getClass() != to.getClass()) { return to; }
 
         to.setPitch(from.getPitch());

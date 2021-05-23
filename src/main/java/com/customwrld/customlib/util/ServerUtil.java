@@ -15,11 +15,11 @@ public class ServerUtil {
     }
 
     public static void hidePlayer(Player hiding, Player from) {
-        from.hidePlayer(CustomLib.getInstance(), hiding);
+        from.hidePlayer(CustomLib.getCustomLib(), hiding);
     }
 
     public static void showPlayer(Player hiding, Player to) {
-        to.showPlayer(CustomLib.getInstance(), hiding);
+        to.showPlayer(CustomLib.getCustomLib(), hiding);
     }
 
 }
