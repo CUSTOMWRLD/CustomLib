@@ -15,7 +15,6 @@ This repo contains the following components:
 * Color Formatting
 * [MongoDB Module](https://github.com/mongodb/mongo-java-driver)
 * [RabbitMQ Module](https://github.com/rabbitmq/rabbitmq-java-client)
-* [DiscordJDA](https://github.com/DV8FromTheWorld/JDA)
 * [Assemble](https://github.com/ThatKawaiiSam/Assemble)
 * [Smart Inventories](https://github.com/MinusKube/SmartInvs)
 
