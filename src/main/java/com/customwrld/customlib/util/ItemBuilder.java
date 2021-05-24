@@ -258,6 +258,17 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setPotionColor(Color color) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof PotionMeta))
+            throw new UnsupportedOperationException("Tried to use setColor on ItemMeta that isn't PotionMeta.");
+
+        ((PotionMeta) meta).setColor(color);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
     public ItemBuilder setPotionData(PotionData potionData) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
