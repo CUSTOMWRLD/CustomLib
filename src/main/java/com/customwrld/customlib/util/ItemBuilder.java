@@ -1,6 +1,8 @@
 package com.customwrld.customlib.util;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -19,6 +21,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class ItemBuilder {
@@ -77,6 +80,29 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setSkin(String skin, String signature) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+        profile.getProperties().put("textures", new Property("textures", skin, signature));
+
+        if(!(meta instanceof SkullMeta))
+            throw new UnsupportedOperationException("Tried to set Profile on ItemMeta that isn't SkullMeta.");
+
+        SkullMeta skullMeta = (SkullMeta) meta;
+
+        try {
+            Field profileField = skullMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, profile);
+        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        itemStack.setItemMeta(meta);
+        return this;
+    }
+
     public ItemBuilder setPlayerProfile(PlayerProfile profile) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
@@ -111,7 +137,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLoreLine(String line, int pos){
+    public ItemBuilder setLoreLine(String line, int pos) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         List<String> lore = new ArrayList<>();
@@ -134,6 +160,34 @@ public class ItemBuilder {
             lore = new ArrayList<>(meta.getLore());
 
         lore.add(line);
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removeLoreLine(String line) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        lore.remove(line);
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removeLoreLine(int index) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        lore.remove(index);
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
         return this;
