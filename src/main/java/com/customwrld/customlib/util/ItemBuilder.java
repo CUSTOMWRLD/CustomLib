@@ -1,209 +1,714 @@
 package com.customwrld.customlib.util;
 
-import org.bukkit.Color;
-import org.bukkit.Material;
+import com.destroystokyo.paper.profile.PlayerProfile;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TropicalFish;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.inventory.meta.*;
+import org.bukkit.map.MapView;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+import org.bukkit.potion.PotionEffectType;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.*;
 
 public class ItemBuilder {
 
-    private final HashMap<Enchantment, Integer> enchantments = new HashMap<>();
-    private final Set<ItemFlag> flags = new HashSet<>();
     private final ItemStack itemStack;
-    private Material material;
-    private Short durability;
-    private String title;
-    private int amount = 1;
-    private List<String> lores;
-    private boolean unbreakable = false;
-    private Color color;
-    private Player headOwner;
-    private PotionData potionData;
-    private List<PotionEffect> potionEffects;
-
-    public ItemBuilder() {
-        this.itemStack = new ItemStack(Material.AIR);
-    }
 
     public ItemBuilder(Material material) {
-        this.itemStack = new ItemStack(material);
+        this(material, 1);
     }
 
-    public ItemBuilder(ItemStack itemStack) {
+    public ItemBuilder(ItemStack itemStack){
         this.itemStack = itemStack;
     }
 
-    public static String itemTo64(ItemStack stack) throws IllegalStateException {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
-            dataOutput.writeObject(stack);
-
-            dataOutput.close();
-            return Base64Coder.encodeLines(outputStream.toByteArray());
-        } catch (Exception e) {
-            throw new IllegalStateException("Unable to save item stack.", e);
-        }
+    public ItemBuilder(Material material, int amount) {
+        this.itemStack = new ItemStack(material, amount);
     }
 
-    public static ItemStack itemFrom64(String data) throws IOException {
-        try {
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
-            try (BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
-                return (ItemStack) dataInput.readObject();
-            }
-        } catch (ClassNotFoundException e) {
-            throw new IOException("Unable to decode class type.", e);
-        }
-    }
-
-    public ItemBuilder material(Material material) {
-        this.material = material;
+    public ItemBuilder setName(String name) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.setDisplayName(CC.translate("&r" + name));
         return this;
     }
 
-    public ItemBuilder durability(short durability) {
-        this.durability = durability;
+    public ItemBuilder setUnbreakable(boolean unbreakable) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.setUnbreakable(unbreakable);
         return this;
     }
 
-    public ItemBuilder title(String title) {
-        this.title = title;
+    public ItemBuilder setModel(int model) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.setCustomModelData(model);
         return this;
     }
 
-    public ItemBuilder amount(int amount) {
-        this.amount = amount;
+    public ItemBuilder setDamage(int damage) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof Damageable))
+            throw new UnsupportedOperationException("Tried to use setDamage on ItemMeta that isn't Damageable.");
+
+        ((Damageable) meta).setDamage(damage);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder lores(List<String> lores) {
-        this.lores = lores;
+    public ItemBuilder setLeatherColor(Color color) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof LeatherArmorMeta))
+            throw new UnsupportedOperationException("Tried to use setColor on ItemMeta that isn't LeatherArmorMeta.");
+
+        ((LeatherArmorMeta) meta).setColor(color);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder lores(String... lores) {
-        this.lores = Arrays.asList(lores);
+    public ItemBuilder setPlayerProfile(PlayerProfile profile) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof SkullMeta))
+            throw new UnsupportedOperationException("Tried to use setPlayerProfile on ItemMeta that isn't SkullMeta.");
+
+        ((SkullMeta) meta).setPlayerProfile(profile);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder enchantment(final Enchantment enchantment, final int level) {
-        this.enchantments.put(enchantment, level);
+    public ItemBuilder setOwningPlayer(Player player) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof SkullMeta))
+            throw new UnsupportedOperationException("Tried to use setOwningPlayer on ItemMeta that isn't SkullMeta.");
+
+        ((SkullMeta) meta).setOwningPlayer(player);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder enchantment(final Enchantment enchantment) {
-        this.enchantment(enchantment, 1);
+    public ItemBuilder setLore(List<String> lore) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.setLore(lore);
+        return this;
+    }
+
+    public ItemBuilder setLore(String... lore) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.setLore(Arrays.asList(lore));
+        return this;
+    }
+
+    public ItemBuilder setLoreLine(String line, int pos){
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        lore.set(pos, line);
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addLoreLine(String line) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        lore.add(line);
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemBuilder clearLore() {
-        lores.clear();
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.setLore(Collections.emptyList());
         return this;
     }
 
-    public ItemBuilder data(final int data) {
-        byte materialData = (byte) data;
+    public ItemBuilder addEnchantments(Map<Enchantment, Integer> enchantments) {
+        this.itemStack.addUnsafeEnchantments(enchantments);
+        return this;
+    }
+
+    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
+        this.itemStack.addUnsafeEnchantment(enchantment, level);
+        return this;
+    }
+
+    public ItemBuilder removeEnchantment(Enchantment enchantment) {
+        this.itemStack.removeEnchantment(enchantment);
         return this;
     }
 
     public ItemBuilder clearEnchantments() {
-        this.enchantments.clear();
+        for(Enchantment enchantment : this.itemStack.getEnchantments().keySet()) {
+            this.itemStack.removeEnchantment(enchantment);
+        }
+
         return this;
     }
 
-    public ItemBuilder unbreakable(boolean b1) {
-        this.unbreakable = b1;
+    public ItemBuilder addFlags(ItemFlag... flags) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.addItemFlags(flags);
         return this;
     }
 
-    public ItemBuilder addFlag(ItemFlag flag){
-        this.flags.add(flag);
+    public ItemBuilder removeFlags(ItemFlag... flags) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.removeItemFlags(flags);
         return this;
     }
 
-    public ItemBuilder color(Color color) {
-        this.color = color;
+    public ItemBuilder addAttribute(Attribute attribute, AttributeModifier modifier) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.addAttributeModifier(attribute, modifier);
         return this;
     }
 
-    public ItemBuilder headOwner(Player player){
-        this.headOwner = player;
+    public ItemBuilder removeAttribute(EquipmentSlot slot) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.removeAttributeModifier(slot);
         return this;
     }
 
-    public ItemBuilder basePotionData(PotionData potionData){
-        this.potionData = potionData;
+    public ItemBuilder removeAttribute(Attribute attribute) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.removeAttributeModifier(attribute);
         return this;
     }
 
-    public ItemBuilder customEffects(List<PotionEffect> potionEffects){
-        this.potionEffects = potionEffects;
+    public ItemBuilder removeAttribute(Attribute attribute, AttributeModifier modifier) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.removeAttributeModifier(attribute, modifier);
         return this;
+    }
+
+    public ItemBuilder setPotionData(PotionData potionData) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof PotionMeta))
+                throw new UnsupportedOperationException("Tried to use setBasePotionData on ItemMeta that isn't PotionMeta.");
+
+        ((PotionMeta) meta).setBasePotionData(potionData);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addPotionEffects(List<PotionEffect> effects) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof PotionMeta))
+            throw new UnsupportedOperationException("Tried to use addCustomEffect on ItemMeta that isn't PotionMeta.");
+
+        PotionMeta potionMeta = (PotionMeta) meta;
+        effects.forEach(potionEffect -> potionMeta.addCustomEffect(potionEffect, true));
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addPotionEffects(PotionEffect... effects) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof PotionMeta))
+            throw new UnsupportedOperationException("Tried to use addCustomEffect on ItemMeta that isn't PotionMeta.");
+
+        PotionMeta potionMeta = (PotionMeta) meta;
+        Arrays.asList(effects).forEach(potionEffect -> potionMeta.addCustomEffect(potionEffect, true));
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removePotionEffects(List<PotionEffectType> types) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof PotionMeta))
+            throw new UnsupportedOperationException("Tried to use removeCustomEffect on ItemMeta that isn't PotionMeta.");
+
+        PotionMeta potionMeta = (PotionMeta) meta;
+        types.forEach(potionMeta::removeCustomEffect);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removePotionEffects(PotionEffectType... types) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof PotionMeta))
+            throw new UnsupportedOperationException("Tried to use removeCustomEffect on ItemMeta that isn't PotionMeta.");
+
+        PotionMeta potionMeta = (PotionMeta) meta;
+        Arrays.asList(types).forEach(potionMeta::removeCustomEffect);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBannerPatterns(List<Pattern> patterns) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BannerMeta))
+            throw new UnsupportedOperationException("Tried to use setPatterns on ItemMeta that isn't BannerMeta.");
+
+        ((BannerMeta) meta).setPatterns(patterns);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBannerPatterns(Pattern... patterns) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BannerMeta))
+            throw new UnsupportedOperationException("Tried to use setPatterns on ItemMeta that isn't BannerMeta.");
+
+        ((BannerMeta) meta).setPatterns(Arrays.asList(patterns));
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBannerPattern(Pattern pattern, Integer index) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BannerMeta))
+            throw new UnsupportedOperationException("Tried to use setPattern on ItemMeta that isn't BannerMeta.");
+
+        ((BannerMeta) meta).setPattern(index, pattern);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addBannerPattern(Pattern pattern) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BannerMeta))
+            throw new UnsupportedOperationException("Tried to use addPattern on ItemMeta that isn't BannerMeta.");
+
+        ((BannerMeta) meta).addPattern(pattern);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removeBannerPattern(int index) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BannerMeta))
+            throw new UnsupportedOperationException("Tried to use removePattern on ItemMeta that isn't BannerMeta.");
+
+        ((BannerMeta) meta).removePattern(index);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBookPages(List<String> pages) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BookMeta))
+            throw new UnsupportedOperationException("Tried to use setPages on ItemMeta that isn't BookMeta.");
+
+        ((BookMeta) meta).setPages(pages);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBookPages(String... pages) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BookMeta))
+            throw new UnsupportedOperationException("Tried to use setPages on ItemMeta that isn't BookMeta.");
+
+        ((BookMeta) meta).setPages(pages);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBookAuthor(String author) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BookMeta))
+            throw new UnsupportedOperationException("Tried to use setAuthor on ItemMeta that isn't BookMeta.");
+
+        ((BookMeta) meta).setAuthor(author);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBookGeneration(BookMeta.Generation generation) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BookMeta))
+            throw new UnsupportedOperationException("Tried to use setGeneration on ItemMeta that isn't BookMeta.");
+
+        ((BookMeta) meta).setGeneration(generation);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBookTitle(String title) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BookMeta))
+            throw new UnsupportedOperationException("Tried to use setTitle on ItemMeta that isn't BookMeta.");
+
+        ((BookMeta) meta).setTitle(title);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBookPage(int page, String data) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BookMeta))
+            throw new UnsupportedOperationException("Tried to use setPage on ItemMeta that isn't BookMeta.");
+
+        ((BookMeta) meta).setPage(page, data);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setCompassLodestone(Location lodestone) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof CompassMeta))
+            throw new UnsupportedOperationException("Tried to use setLodestone on ItemMeta that isn't CompassMeta.");
+
+        ((CompassMeta) meta).setLodestone(lodestone);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setCompassLodestoneTracked(boolean tracked) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof CompassMeta))
+            throw new UnsupportedOperationException("Tried to use setLodestoneTracked on ItemMeta that isn't CompassMeta.");
+
+        ((CompassMeta) meta).setLodestoneTracked(tracked);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setCrossbowChargedProjectiles(List<ItemStack> projectiles) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof CrossbowMeta))
+            throw new UnsupportedOperationException("Tried to use setChargedProjectiles on ItemMeta that isn't CrossbowMeta.");
+
+        ((CrossbowMeta) meta).setChargedProjectiles(projectiles);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setCrossbowChargedProjectiles(ItemStack... projectiles) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof CrossbowMeta))
+            throw new UnsupportedOperationException("Tried to use setChargedProjectiles on ItemMeta that isn't CrossbowMeta.");
+
+        ((CrossbowMeta) meta).setChargedProjectiles(Arrays.asList(projectiles));
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addCrossbowChargedProjectile(ItemStack projectile) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof CrossbowMeta))
+            throw new UnsupportedOperationException("Tried to use addChargedProjectile on ItemMeta that isn't CrossbowMeta.");
+
+        ((CrossbowMeta) meta).addChargedProjectile(projectile);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setMapColor(Color color) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof MapMeta))
+            throw new UnsupportedOperationException("Tried to use setColor on ItemMeta that isn't MapMeta.");
+
+        ((MapMeta) meta).setColor(color);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setMapLocationName(String name) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof MapMeta))
+            throw new UnsupportedOperationException("Tried to use setLocationName on ItemMeta that isn't MapMeta.");
+
+        ((MapMeta) meta).setLocationName(name);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setMapView(MapView mapView) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof MapMeta))
+            throw new UnsupportedOperationException("Tried to use setMapView on ItemMeta that isn't MapMeta.");
+
+        ((MapMeta) meta).setMapView(mapView);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setMapScaling(boolean scaling) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof MapMeta))
+            throw new UnsupportedOperationException("Tried to use setScaling on ItemMeta that isn't MapMeta.");
+
+        ((MapMeta) meta).setScaling(scaling);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setKnowledgeBookRecipes(List<NamespacedKey> recipes) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof KnowledgeBookMeta))
+            throw new UnsupportedOperationException("Tried to use setRecipes on ItemMeta that isn't KnowledgeBookMeta.");
+
+        ((KnowledgeBookMeta) meta).setRecipes(recipes);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setKnowledgeBookRecipes(NamespacedKey... recipes) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof KnowledgeBookMeta))
+            throw new UnsupportedOperationException("Tried to use setRecipes on ItemMeta that isn't KnowledgeBookMeta.");
+
+        ((KnowledgeBookMeta) meta).setRecipes(Arrays.asList(recipes));
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addKnowledgeBookRecipes(NamespacedKey... recipes) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof KnowledgeBookMeta))
+            throw new UnsupportedOperationException("Tried to use addRecipe on ItemMeta that isn't KnowledgeBookMeta.");
+
+        ((KnowledgeBookMeta) meta).addRecipe(recipes);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setRocketEffect(FireworkEffect fireworkEffect) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkEffectMeta))
+            throw new UnsupportedOperationException("Tried to use setEffect on ItemMeta that isn't FireworkEffectMeta.");
+
+        ((FireworkEffectMeta) meta).setEffect(fireworkEffect);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setRocketPower(int power) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkMeta))
+            throw new UnsupportedOperationException("Tried to use setPower on ItemMeta that isn't FireworkMeta.");
+
+        ((FireworkMeta) meta).setPower(power);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addRocketEffect(FireworkEffect fireworkEffect) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkMeta))
+            throw new UnsupportedOperationException("Tried to use addEffect on ItemMeta that isn't FireworkMeta.");
+
+        ((FireworkMeta) meta).addEffect(fireworkEffect);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addRocketEffects(Iterable<FireworkEffect> fireworkEffect) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkMeta))
+            throw new UnsupportedOperationException("Tried to use addEffects on ItemMeta that isn't FireworkMeta.");
+
+        ((FireworkMeta) meta).addEffects(fireworkEffect);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addRocketEffects(FireworkEffect... fireworkEffect) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkMeta))
+            throw new UnsupportedOperationException("Tried to use addEffects on ItemMeta that isn't FireworkMeta.");
+
+        ((FireworkMeta) meta).addEffects(fireworkEffect);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder clearRocketEffects() {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkMeta))
+            throw new UnsupportedOperationException("Tried to use clearEffects on ItemMeta that isn't FireworkMeta.");
+
+        ((FireworkMeta) meta).clearEffects();
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removeRocketEffect(int index) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof FireworkMeta))
+            throw new UnsupportedOperationException("Tried to use removeEffect on ItemMeta that isn't FireworkMeta.");
+
+        ((FireworkMeta) meta).removeEffect(index);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addStewEffect(PotionEffect potionEffect) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof SuspiciousStewMeta))
+            throw new UnsupportedOperationException("Tried to use addCustomEffect on ItemMeta that isn't SuspiciousStewMeta.");
+
+        ((SuspiciousStewMeta) meta).addCustomEffect(potionEffect, true);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removeStewEffect(PotionEffectType type) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof SuspiciousStewMeta))
+            throw new UnsupportedOperationException("Tried to use removeCustomEffect on ItemMeta that isn't SuspiciousStewMeta.");
+
+        ((SuspiciousStewMeta) meta).removeCustomEffect(type);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder clearStewEffects() {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof SuspiciousStewMeta))
+            throw new UnsupportedOperationException("Tried to use clearCustomEffects on ItemMeta that isn't SuspiciousStewMeta.");
+
+        ((SuspiciousStewMeta) meta).clearCustomEffects();
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setFishColor(DyeColor color) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof TropicalFishBucketMeta))
+            throw new UnsupportedOperationException("Tried to use setBodyColor on ItemMeta that isn't TropicalFishBucketMeta.");
+
+        ((TropicalFishBucketMeta) meta).setBodyColor(color);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setFishPatternColor(DyeColor color) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof TropicalFishBucketMeta))
+            throw new UnsupportedOperationException("Tried to use setPatternColor on ItemMeta that isn't TropicalFishBucketMeta.");
+
+        ((TropicalFishBucketMeta) meta).setPatternColor(color);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setFishPattern(TropicalFish.Pattern pattern) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof TropicalFishBucketMeta))
+            throw new UnsupportedOperationException("Tried to use setPattern on ItemMeta that isn't TropicalFishBucketMeta.");
+
+        ((TropicalFishBucketMeta) meta).setPattern(pattern);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder addStoredEnchantment(Enchantment enchantment, int level) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof EnchantmentStorageMeta))
+            throw new UnsupportedOperationException("Tried to use addStoredEnchant on ItemMeta that isn't EnchantmentStorageMeta.");
+
+        ((EnchantmentStorageMeta) meta).addStoredEnchant(enchantment, level, true);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder removeStoredEnchantment(Enchantment enchantment) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof EnchantmentStorageMeta))
+            throw new UnsupportedOperationException("Tried to use removeStoredEnchant on ItemMeta that isn't EnchantmentStorageMeta.");
+
+        ((EnchantmentStorageMeta) meta).removeStoredEnchant(enchantment);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBlockState(BlockState state) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BlockStateMeta))
+            throw new UnsupportedOperationException("Tried to use setBlockState on ItemMeta that isn't BlockStateMeta.");
+
+        ((BlockStateMeta) meta).setBlockState(state);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder setBlockData(BlockData data) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BlockDataMeta))
+            throw new UnsupportedOperationException("Tried to use setBlockData on ItemMeta that isn't BlockDataMeta.");
+
+        ((BlockDataMeta) meta).setBlockData(data);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemBuilder clone() {
+        return new ItemBuilder(itemStack);
     }
 
     public ItemStack build() {
-        ItemStack itemStack = this.itemStack;
-        if (this.material != null) {
-            itemStack.setType(this.material);
-        }
-        for (Enchantment enchantment : enchantments.keySet()) {
-            itemStack.addUnsafeEnchantment(enchantment, enchantments.get(enchantment));
-        }
-        ItemMeta meta = itemStack.getItemMeta();
-        meta.setUnbreakable(this.unbreakable);
-        if (this.amount > 0)
-            itemStack.setAmount(this.amount);
-        if (this.durability != null)
-            itemStack.setDurability(this.durability);
-        if (this.title != null)
-            meta.setDisplayName(CC.translate("&r" + this.title));
-        if (this.lores != null && this.lores.size() > 0)
-            meta.setLore(CC.translate(this.lores));
-        if (this.flags.size() > 0)
-            meta.addItemFlags(flags.toArray(new ItemFlag[0]));
-
-        if (this.color != null) {
-            if (!(meta instanceof LeatherArmorMeta))
-                throw new UnsupportedOperationException("Tried to set Color on ItemMeta that isn't LeatherArmorMeta.");
-            ((LeatherArmorMeta) meta).setColor(color);
-        }
-
-        if (this.headOwner != null){
-            if (!(meta instanceof SkullMeta))
-                throw new UnsupportedOperationException("Tried to set OwningPlayer on ItemMeta that isn't SkullMeta.");
-            ((SkullMeta) meta).setOwningPlayer(headOwner);
-        }
-
-        if (this.potionData != null){
-            if (!(meta instanceof PotionMeta))
-                throw new UnsupportedOperationException("Tried to set CustomEffect on ItemMeta that isn't PotionMeta.");
-            ((PotionMeta) meta).setBasePotionData(potionData);
-        }
-        if (this.potionEffects != null){
-            if (!(meta instanceof PotionMeta))
-                throw new UnsupportedOperationException("Tried to set CustomEffect on ItemMeta that isn't PotionMeta.");
-            PotionMeta potionMeta = (PotionMeta) meta;
-            potionEffects.forEach(potionEffect -> potionMeta.addCustomEffect(potionEffect, true));
-        }
-        itemStack.setItemMeta(meta);
-        return itemStack;
+        return this.itemStack;
     }
 
 }

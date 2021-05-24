@@ -3,6 +3,9 @@ package com.customwrld.customlib.util;
 import com.google.common.base.Strings;
 import org.bukkit.ChatColor;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+
 public class MathUtil {
 
     public static boolean isIntegral(double x) { return x % 1 == 0; }
@@ -82,6 +85,21 @@ public class MathUtil {
         int progressBars = (int) (totalBars * percent);
 
         return Strings.repeat("" + completedColor + symbol, progressBars) + Strings.repeat("" + notCompletedColor + symbol, totalBars - progressBars);
+    }
+
+    public static String readableBytes(long bytes) {
+        long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+        if (absB < 1024) {
+            return bytes + " B";
+        }
+        long value = absB;
+        CharacterIterator ci = new StringCharacterIterator("KMGTPE");
+        for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
+            value >>= 10;
+            ci.next();
+        }
+        value *= Long.signum(bytes);
+        return String.format("%.1f %ciB", value / 1024.0, ci.current());
     }
 
 }
