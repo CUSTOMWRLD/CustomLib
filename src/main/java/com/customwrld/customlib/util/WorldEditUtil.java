@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class WorldEditUtil {
+
     public static void pasteSchematic(World world, File folder, String child) {
         File file = new File(folder, child);
 
@@ -43,4 +44,5 @@ public class WorldEditUtil {
             e.printStackTrace();
         }
     }
+
 }
