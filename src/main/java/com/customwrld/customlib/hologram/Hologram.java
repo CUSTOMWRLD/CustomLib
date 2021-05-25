@@ -1,12 +1,8 @@
 package com.customwrld.customlib.hologram;
 
 import com.customwrld.customlib.hologram.component.AbstractHologramComponent;
-import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
-import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
 import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

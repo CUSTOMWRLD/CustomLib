@@ -1,7 +1,6 @@
 package com.customwrld.customlib.pigeon.converters;
 
 import com.customwrld.pigeon.Converter;
-import com.customwrld.pigeon.converters.UUIDConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

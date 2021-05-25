@@ -2,11 +2,7 @@ package com.customwrld.customlib.pigeon.converters;
 
 import com.customwrld.pigeon.Converter;
 import com.customwrld.pigeon.converters.StringConverter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-
-import java.util.UUID;
 
 public class MaterialConverter extends Converter<Material> {
     public MaterialConverter() { super(Material.class); }

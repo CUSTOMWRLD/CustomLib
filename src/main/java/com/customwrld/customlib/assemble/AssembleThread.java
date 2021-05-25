@@ -1,7 +1,6 @@
 package com.customwrld.customlib.assemble;
 
 import com.customwrld.customlib.util.CC;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;

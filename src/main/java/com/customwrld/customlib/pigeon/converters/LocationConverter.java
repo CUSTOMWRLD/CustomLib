@@ -2,12 +2,9 @@ package com.customwrld.customlib.pigeon.converters;
 
 import com.customwrld.customlib.util.CollectionsUtil;
 import com.customwrld.pigeon.Converter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.Map;
-import java.util.UUID;
 
 public class LocationConverter extends Converter<Location> {
     public LocationConverter() { super(Location.class); }
