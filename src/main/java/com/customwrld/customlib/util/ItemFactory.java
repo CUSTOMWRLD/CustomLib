@@ -24,41 +24,51 @@ import org.bukkit.potion.PotionEffectType;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class ItemBuilder {
+public class ItemFactory {
 
     private final ItemStack itemStack;
 
-    public ItemBuilder(Material material) {
+    public ItemFactory(Material material) {
         this(material, 1);
     }
 
-    public ItemBuilder(ItemStack itemStack){
+    public ItemFactory(ItemStack itemStack){
         this.itemStack = itemStack;
     }
 
-    public ItemBuilder(Material material, int amount) {
+    public ItemFactory(Material material, int amount) {
         this.itemStack = new ItemStack(material, amount);
     }
 
-    public ItemBuilder setName(String name) {
+    public ItemFactory setName(String name) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setDisplayName(CC.translate("&r" + name));
         return this;
     }
 
-    public ItemBuilder setUnbreakable(boolean unbreakable) {
+    public ItemFactory setType(Material type) {
+        this.itemStack.setType(type);
+        return this;
+    }
+
+    public ItemFactory setAmount(int amount) {
+        this.itemStack.setAmount(amount);
+        return this;
+    }
+
+    public ItemFactory setUnbreakable(boolean unbreakable) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setUnbreakable(unbreakable);
         return this;
     }
 
-    public ItemBuilder setModel(int model) {
+    public ItemFactory setModel(int model) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setCustomModelData(model);
         return this;
     }
 
-    public ItemBuilder setDamage(int damage) {
+    public ItemFactory setDamage(int damage) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof Damageable))
@@ -69,7 +79,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLeatherColor(Color color) {
+    public ItemFactory setLeatherColor(Color color) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof LeatherArmorMeta))
@@ -80,7 +90,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setSkin(String skin, String signature) {
+    public ItemFactory setSkin(String skin, String signature) {
         ItemMeta meta = this.itemStack.getItemMeta();
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 
@@ -103,7 +113,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setPlayerProfile(PlayerProfile profile) {
+    public ItemFactory setPlayerProfile(PlayerProfile profile) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SkullMeta))
@@ -114,7 +124,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setOwningPlayer(Player player) {
+    public ItemFactory setOwningPlayer(Player player) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SkullMeta))
@@ -125,19 +135,19 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLore(List<String> lore) {
+    public ItemFactory setLore(List<String> lore) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setLore(lore);
         return this;
     }
 
-    public ItemBuilder setLore(String... lore) {
+    public ItemFactory setLore(String... lore) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setLore(Arrays.asList(lore));
         return this;
     }
 
-    public ItemBuilder setLoreLine(String line, int pos) {
+    public ItemFactory setLoreLine(String line, int pos) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         List<String> lore = new ArrayList<>();
@@ -151,7 +161,18 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addLoreLine(String line) {
+    public ItemFactory addLoreLine(String line) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        int index = 0;
+        if(meta.getLore() != null)
+            index = meta.getLore().size();
+
+        addLoreLine(line, index);
+        return this;
+    }
+
+    public ItemFactory addLoreLine(String line, int index) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         List<String> lore = new ArrayList<>();
@@ -159,13 +180,13 @@ public class ItemBuilder {
         if(meta.getLore() != null && meta.hasLore())
             lore = new ArrayList<>(meta.getLore());
 
-        lore.add(line);
+        lore.add(index, line);
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder removeLoreLine(String line) {
+    public ItemFactory removeLoreLine(String line) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         List<String> lore = new ArrayList<>();
@@ -179,7 +200,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removeLoreLine(int index) {
+    public ItemFactory removeLoreLine(int index) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         List<String> lore = new ArrayList<>();
@@ -193,28 +214,28 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder clearLore() {
+    public ItemFactory clearLore() {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setLore(Collections.emptyList());
         return this;
     }
 
-    public ItemBuilder addEnchantments(Map<Enchantment, Integer> enchantments) {
+    public ItemFactory addEnchantments(Map<Enchantment, Integer> enchantments) {
         this.itemStack.addUnsafeEnchantments(enchantments);
         return this;
     }
 
-    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
+    public ItemFactory addEnchantment(Enchantment enchantment, int level) {
         this.itemStack.addUnsafeEnchantment(enchantment, level);
         return this;
     }
 
-    public ItemBuilder removeEnchantment(Enchantment enchantment) {
+    public ItemFactory removeEnchantment(Enchantment enchantment) {
         this.itemStack.removeEnchantment(enchantment);
         return this;
     }
 
-    public ItemBuilder clearEnchantments() {
+    public ItemFactory clearEnchantments() {
         for(Enchantment enchantment : this.itemStack.getEnchantments().keySet()) {
             this.itemStack.removeEnchantment(enchantment);
         }
@@ -222,43 +243,43 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addFlags(ItemFlag... flags) {
+    public ItemFactory addFlags(ItemFlag... flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addItemFlags(flags);
         return this;
     }
 
-    public ItemBuilder removeFlags(ItemFlag... flags) {
+    public ItemFactory removeFlags(ItemFlag... flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeItemFlags(flags);
         return this;
     }
 
-    public ItemBuilder addAttribute(Attribute attribute, AttributeModifier modifier) {
+    public ItemFactory addAttribute(Attribute attribute, AttributeModifier modifier) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addAttributeModifier(attribute, modifier);
         return this;
     }
 
-    public ItemBuilder removeAttribute(EquipmentSlot slot) {
+    public ItemFactory removeAttribute(EquipmentSlot slot) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(slot);
         return this;
     }
 
-    public ItemBuilder removeAttribute(Attribute attribute) {
+    public ItemFactory removeAttribute(Attribute attribute) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(attribute);
         return this;
     }
 
-    public ItemBuilder removeAttribute(Attribute attribute, AttributeModifier modifier) {
+    public ItemFactory removeAttribute(Attribute attribute, AttributeModifier modifier) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(attribute, modifier);
         return this;
     }
 
-    public ItemBuilder setPotionColor(Color color) {
+    public ItemFactory setPotionColor(Color color) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
@@ -269,7 +290,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setPotionData(PotionData potionData) {
+    public ItemFactory setPotionData(PotionData potionData) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
@@ -280,7 +301,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addPotionEffects(List<PotionEffect> effects) {
+    public ItemFactory addPotionEffects(List<PotionEffect> effects) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
@@ -292,7 +313,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addPotionEffects(PotionEffect... effects) {
+    public ItemFactory addPotionEffects(PotionEffect... effects) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
@@ -304,7 +325,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removePotionEffects(List<PotionEffectType> types) {
+    public ItemFactory removePotionEffects(List<PotionEffectType> types) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
@@ -316,7 +337,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removePotionEffects(PotionEffectType... types) {
+    public ItemFactory removePotionEffects(PotionEffectType... types) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
@@ -328,7 +349,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBannerPatterns(List<Pattern> patterns) {
+    public ItemFactory setBannerPatterns(List<Pattern> patterns) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
@@ -339,7 +360,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBannerPatterns(Pattern... patterns) {
+    public ItemFactory setBannerPatterns(Pattern... patterns) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
@@ -350,7 +371,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBannerPattern(Pattern pattern, Integer index) {
+    public ItemFactory setBannerPattern(Pattern pattern, Integer index) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
@@ -361,7 +382,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addBannerPattern(Pattern pattern) {
+    public ItemFactory addBannerPattern(Pattern pattern) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
@@ -372,7 +393,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removeBannerPattern(int index) {
+    public ItemFactory removeBannerPattern(int index) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
@@ -383,7 +404,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBookPages(List<String> pages) {
+    public ItemFactory setBookPages(List<String> pages) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
@@ -394,7 +415,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBookPages(String... pages) {
+    public ItemFactory setBookPages(String... pages) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
@@ -405,7 +426,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBookAuthor(String author) {
+    public ItemFactory setBookAuthor(String author) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
@@ -416,7 +437,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBookGeneration(BookMeta.Generation generation) {
+    public ItemFactory setBookGeneration(BookMeta.Generation generation) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
@@ -427,7 +448,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBookTitle(String title) {
+    public ItemFactory setBookTitle(String title) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
@@ -438,7 +459,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBookPage(int page, String data) {
+    public ItemFactory setBookPage(int page, String data) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
@@ -449,7 +470,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setCompassLodestone(Location lodestone) {
+    public ItemFactory setCompassLodestone(Location lodestone) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CompassMeta))
@@ -460,7 +481,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setCompassLodestoneTracked(boolean tracked) {
+    public ItemFactory setCompassLodestoneTracked(boolean tracked) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CompassMeta))
@@ -471,7 +492,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setCrossbowChargedProjectiles(List<ItemStack> projectiles) {
+    public ItemFactory setCrossbowChargedProjectiles(List<ItemStack> projectiles) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CrossbowMeta))
@@ -482,7 +503,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setCrossbowChargedProjectiles(ItemStack... projectiles) {
+    public ItemFactory setCrossbowChargedProjectiles(ItemStack... projectiles) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CrossbowMeta))
@@ -493,7 +514,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addCrossbowChargedProjectile(ItemStack projectile) {
+    public ItemFactory addCrossbowChargedProjectile(ItemStack projectile) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CrossbowMeta))
@@ -504,7 +525,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setMapColor(Color color) {
+    public ItemFactory setMapColor(Color color) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
@@ -515,7 +536,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setMapLocationName(String name) {
+    public ItemFactory setMapLocationName(String name) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
@@ -526,7 +547,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setMapView(MapView mapView) {
+    public ItemFactory setMapView(MapView mapView) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
@@ -537,7 +558,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setMapScaling(boolean scaling) {
+    public ItemFactory setMapScaling(boolean scaling) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
@@ -548,7 +569,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setKnowledgeBookRecipes(List<NamespacedKey> recipes) {
+    public ItemFactory setKnowledgeBookRecipes(List<NamespacedKey> recipes) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof KnowledgeBookMeta))
@@ -559,7 +580,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setKnowledgeBookRecipes(NamespacedKey... recipes) {
+    public ItemFactory setKnowledgeBookRecipes(NamespacedKey... recipes) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof KnowledgeBookMeta))
@@ -570,7 +591,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addKnowledgeBookRecipes(NamespacedKey... recipes) {
+    public ItemFactory addKnowledgeBookRecipes(NamespacedKey... recipes) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof KnowledgeBookMeta))
@@ -581,7 +602,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setRocketEffect(FireworkEffect fireworkEffect) {
+    public ItemFactory setRocketEffect(FireworkEffect fireworkEffect) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkEffectMeta))
@@ -592,7 +613,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setRocketPower(int power) {
+    public ItemFactory setRocketPower(int power) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
@@ -603,7 +624,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addRocketEffect(FireworkEffect fireworkEffect) {
+    public ItemFactory addRocketEffect(FireworkEffect fireworkEffect) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
@@ -614,7 +635,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addRocketEffects(Iterable<FireworkEffect> fireworkEffect) {
+    public ItemFactory addRocketEffects(Iterable<FireworkEffect> fireworkEffect) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
@@ -625,7 +646,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addRocketEffects(FireworkEffect... fireworkEffect) {
+    public ItemFactory addRocketEffects(FireworkEffect... fireworkEffect) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
@@ -636,7 +657,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder clearRocketEffects() {
+    public ItemFactory clearRocketEffects() {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
@@ -647,7 +668,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removeRocketEffect(int index) {
+    public ItemFactory removeRocketEffect(int index) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
@@ -658,7 +679,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addStewEffect(PotionEffect potionEffect) {
+    public ItemFactory addStewEffect(PotionEffect potionEffect) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SuspiciousStewMeta))
@@ -669,7 +690,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removeStewEffect(PotionEffectType type) {
+    public ItemFactory removeStewEffect(PotionEffectType type) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SuspiciousStewMeta))
@@ -680,7 +701,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder clearStewEffects() {
+    public ItemFactory clearStewEffects() {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SuspiciousStewMeta))
@@ -691,7 +712,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setFishColor(DyeColor color) {
+    public ItemFactory setFishColor(DyeColor color) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof TropicalFishBucketMeta))
@@ -702,7 +723,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setFishPatternColor(DyeColor color) {
+    public ItemFactory setFishPatternColor(DyeColor color) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof TropicalFishBucketMeta))
@@ -713,7 +734,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setFishPattern(TropicalFish.Pattern pattern) {
+    public ItemFactory setFishPattern(TropicalFish.Pattern pattern) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof TropicalFishBucketMeta))
@@ -724,7 +745,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addStoredEnchantment(Enchantment enchantment, int level) {
+    public ItemFactory addStoredEnchantment(Enchantment enchantment, int level) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof EnchantmentStorageMeta))
@@ -735,7 +756,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder removeStoredEnchantment(Enchantment enchantment) {
+    public ItemFactory removeStoredEnchantment(Enchantment enchantment) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof EnchantmentStorageMeta))
@@ -746,7 +767,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBlockState(BlockState state) {
+    public ItemFactory setBlockState(BlockState state) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BlockStateMeta))
@@ -757,7 +778,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setBlockData(BlockData data) {
+    public ItemFactory setBlockData(BlockData data) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BlockDataMeta))
@@ -768,8 +789,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder clone() {
-        return new ItemBuilder(itemStack);
+    public ItemFactory clone() {
+        return new ItemFactory(itemStack);
     }
 
     public ItemStack build() {

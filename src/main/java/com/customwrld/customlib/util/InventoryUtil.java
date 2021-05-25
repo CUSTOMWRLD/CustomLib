@@ -18,11 +18,9 @@ import java.util.Random;
 public class InventoryUtil {
 
     public static boolean isSimilar(ItemStack first, ItemStack second) {
-
         boolean similar = false;
-        boolean sameItemMeta = true;
+        boolean sameItemMeta = false;
         boolean sameType = (first.getType() == second.getType());
-        boolean sameAmount = (first.getAmount() == second.getAmount());
         boolean sameHasItemMeta = (first.hasItemMeta() == second.hasItemMeta());
         boolean sameEnchantments = (first.getEnchantments().equals(second.getEnchantments()));
 
@@ -30,7 +28,7 @@ public class InventoryUtil {
             sameItemMeta = Bukkit.getItemFactory().equals(first.getItemMeta(), second.getItemMeta());
         }
 
-        if (sameType && sameAmount && sameHasItemMeta && sameEnchantments && sameItemMeta) {
+        if (sameType && sameHasItemMeta && sameEnchantments && sameItemMeta) {
             similar = true;
         }
         return similar;
