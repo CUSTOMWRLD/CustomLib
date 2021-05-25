@@ -9,13 +9,12 @@ import com.customwrld.customlib.misc.GlowEnchantment;
 import com.customwrld.customlib.npc.NPC;
 import com.customwrld.customlib.npc.NPCTask;
 import com.customwrld.customlib.smartinvs.InventoryManager;
+import com.customwrld.pigeon.Pigeon;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,13 +37,18 @@ public class CustomLib extends JavaPlugin implements Listener {
     public static final Type MAP_STRING_TYPE = new TypeToken<Map<String, Object>>() {}.getType();
 
     @Getter private static CustomLib customLib;
+    @Getter private Pigeon pigeon;
+
     @Getter private Gson prettyGson;
     @Getter private Gson gson;
+
     @Getter private ConfigurationFile mainConfig;
-    @Getter private Connection rabbitMqConnection;
+
     @Getter private MongoClient mongoClient;
     @Getter private MongoDatabase mongoDatabase;
+
     @Getter private InventoryManager invManager;
+
     @Getter private List<NPC> npcs;
     @Getter private List<Hologram> holograms;
     @Getter private List<UUID> serverUsers;
@@ -66,7 +70,7 @@ public class CustomLib extends JavaPlugin implements Listener {
             }
         }
 
-        connectAQMPClient();
+        loadPigeon();
         loadMongo();
 
         npcs = new ArrayList<>();
@@ -82,17 +86,25 @@ public class CustomLib extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
         GlowEnchantment.register();
+
+        pigeon.getConvertersRegistry()
+                .registerConvertersInPackage("customlib.pigeon.converters");
+
+        pigeon.getPayloadsRegistry()
+                .registerPayloadsInPackage("customlib.pigeon.payloads");
+
+        //Accept deliveries after all plugins load
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                pigeon.acceptDelivery();
+            }
+        }.runTaskLater(this, 1);
     }
 
     @Override
     public void onDisable() {
-        try {
-            if(rabbitMqConnection != null && rabbitMqConnection.isOpen()) {
-                rabbitMqConnection.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if(pigeon != null) { pigeon.getPostOffice().disconnect(); }
     }
 
     @EventHandler
@@ -122,15 +134,11 @@ public class CustomLib extends JavaPlugin implements Listener {
         mongoDatabase = mongoClient.getDatabase(mainConfig.getString("MONGO.DATABASE"));
     }
 
-    private void connectAQMPClient() {
-        try {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.setHost(mainConfig.getString("RABBITMQ.HOST"));
-            factory.setPort(mainConfig.getInt("RABBITMQ.PORT"));
+    private void loadPigeon() {
+        String host = mainConfig.getString("RABBITMQ.HOST");
+        int port = mainConfig.getInt("RABBITMQ.PORT");
 
-            rabbitMqConnection = factory.newConnection();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        pigeon = new Pigeon();
+        pigeon.initialize(host, port, "customwrld", "minecraft-hub0");
     }
 }
