@@ -88,10 +88,10 @@ public class CustomLib extends JavaPlugin implements Listener {
         GlowEnchantment.register();
 
         pigeon.getConvertersRegistry()
-                .registerConvertersInPackage("customlib.pigeon.converters");
+                .registerConvertersInPackage("com.customwrld.customlib.pigeon.converters");
 
         pigeon.getPayloadsRegistry()
-                .registerPayloadsInPackage("customlib.pigeon.payloads");
+                .registerPayloadsInPackage("com.customwrld.customlib.pigeon.payloads");
 
         //Accept deliveries after all plugins load
         new BukkitRunnable() {
