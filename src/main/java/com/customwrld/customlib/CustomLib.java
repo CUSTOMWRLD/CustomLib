@@ -10,7 +10,6 @@ import com.customwrld.customlib.npc.NPC;
 import com.customwrld.customlib.npc.NPCTask;
 import com.customwrld.customlib.smartinvs.InventoryManager;
 import com.customwrld.pigeon.Pigeon;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
@@ -24,17 +23,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 
 public class CustomLib extends JavaPlugin implements Listener {
-
-    public static final Type LIST_STRING_TYPE = new TypeToken<List<String>>() {}.getType();
-    public static final Type MAP_STRING_TYPE = new TypeToken<Map<String, Object>>() {}.getType();
 
     @Getter private static CustomLib customLib;
     @Getter private Pigeon pigeon;
