@@ -553,6 +553,20 @@ public class ItemFactory {
         return this;
     }
 
+    public ItemFactory clearBannerPatterns() {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        if (!(meta instanceof BannerMeta))
+            throw new UnsupportedOperationException("Tried to use removePattern on ItemMeta that isn't BannerMeta.");
+
+        BannerMeta bannerMeta = ((BannerMeta) meta);
+        for(int i = 0; i < bannerMeta.numberOfPatterns(); i++) {
+            bannerMeta.removePattern(i);
+        }
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
     public ItemFactory setBookPages(List<String> pages) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
