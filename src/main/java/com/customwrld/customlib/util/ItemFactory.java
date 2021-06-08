@@ -1,8 +1,8 @@
 package com.customwrld.customlib.util;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
+import com.destroystokyo.paper.profile.ProfileProperty;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -10,7 +10,6 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.TropicalFish;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemFlag;
@@ -21,7 +20,6 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class ItemFactory {
@@ -92,25 +90,14 @@ public class ItemFactory {
 
     public ItemFactory setSkin(String skin, String signature) {
         ItemMeta meta = this.itemStack.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
 
-        profile.getProperties().put("textures", new Property("textures", skin, signature));
+        profile.getProperties().add(new ProfileProperty("textures", skin, signature));
 
         if(!(meta instanceof SkullMeta))
-            throw new UnsupportedOperationException("Tried to set Profile on ItemMeta that isn't SkullMeta.");
+            throw new UnsupportedOperationException("Tried to setSkin on ItemMeta that isn't SkullMeta.");
 
-        SkullMeta skullMeta = (SkullMeta) meta;
-
-        try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        itemStack.setItemMeta(meta);
-        return this;
+        return setPlayerProfile(profile);
     }
 
     public ItemFactory setPlayerProfile(PlayerProfile profile) {
