@@ -383,6 +383,13 @@ public class ItemFactory {
         return this;
     }
 
+    public ItemFactory addAttributes(Map<Attribute, AttributeModifier> attributes) {
+        for(Map.Entry<Attribute, AttributeModifier> ent : attributes.entrySet()) {
+            addAttribute(ent.getKey(), ent.getValue());
+        }
+        return this;
+    }
+
     public ItemFactory addAttribute(Attribute attribute, AttributeModifier modifier) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addAttributeModifier(attribute, modifier);
@@ -392,6 +399,20 @@ public class ItemFactory {
     public ItemFactory removeAttribute(EquipmentSlot slot) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(slot);
+        return this;
+    }
+
+    public ItemFactory removeAttributes(List<Attribute> attributes) {
+        for(Attribute attribute : attributes) {
+            removeAttribute(attribute);
+        }
+        return this;
+    }
+
+    public ItemFactory removeAttributes(Attribute... attributes) {
+        for(Attribute attribute : attributes) {
+            removeAttribute(attribute);
+        }
         return this;
     }
 
