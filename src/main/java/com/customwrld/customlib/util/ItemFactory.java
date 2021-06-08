@@ -134,7 +134,7 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory setLoreLine(String line, int pos) {
+    public ItemFactory setLoreLine(String line, int index) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         List<String> lore = new ArrayList<>();
@@ -142,7 +142,61 @@ public class ItemFactory {
         if(meta.getLore() != null && meta.hasLore())
             lore = new ArrayList<>(meta.getLore());
 
-        lore.set(pos, line);
+        lore.set(index, line);
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemFactory addLoreLines(SortedMap<Integer, String> lines) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        TreeMap<Integer, String> sortedLines = new TreeMap<>(lines);
+        for(int index : sortedLines.descendingKeySet()){
+            lore.add(index, sortedLines.get(index));
+        }
+
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemFactory addLoreLines(List<String> lines, int index) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        Collections.reverse(lines);
+        for(String line : lines) {
+            lore.add(index, line);
+        }
+
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        return this;
+    }
+
+    public ItemFactory addLoreLines(int index, String... lines) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+
+        List<String> lore = new ArrayList<>();
+
+        if(meta.getLore() != null && meta.hasLore())
+            lore = new ArrayList<>(meta.getLore());
+
+        ArrayUtils.reverse(lines);
+        for(String line : lines) {
+            lore.add(index, line);
+        }
+
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
         return this;
@@ -155,8 +209,7 @@ public class ItemFactory {
         if(meta.getLore() != null)
             index = meta.getLore().size();
 
-        addLoreLine(line, index);
-        return this;
+        return addLoreLine(line, index);
     }
 
     public ItemFactory addLoreLine(String line, int index) {
