@@ -111,7 +111,7 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory setOwningPlayer(Player player) {
+    public ItemFactory setOwningPlayer(OfflinePlayer player) {
         ItemMeta meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SkullMeta))
