@@ -261,12 +261,88 @@ public class ItemFactory {
     }
 
     public ItemFactory addEnchantments(Map<Enchantment, Integer> enchantments) {
-        this.itemStack.addUnsafeEnchantments(enchantments);
+        this.itemStack.addEnchantments(enchantments);
+        return this;
+    }
+
+    public ItemFactory addEnchantments(List<Enchantment> enchantments) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.addEnchantment(enchant, 1);
+        }
+        return this;
+    }
+
+    public ItemFactory addEnchantments(List<Enchantment> enchantments, int level) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.addEnchantment(enchant, level);
+        }
+        return this;
+    }
+
+    public ItemFactory addEnchantments(int level, Enchantment... enchantments) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.addEnchantment(enchant, level);
+        }
+        return this;
+    }
+
+    public ItemFactory addEnchantments(Enchantment... enchantments) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.addEnchantment(enchant, 1);
+        }
+        return this;
+    }
+
+    public ItemFactory addEnchantment(Enchantment enchantment) {
+        this.itemStack.addEnchantment(enchantment, 1);
         return this;
     }
 
     public ItemFactory addEnchantment(Enchantment enchantment, int level) {
+        this.itemStack.addEnchantment(enchantment, level);
+        return this;
+    }
+
+    public ItemFactory addUnsafeEnchantments(Map<Enchantment, Integer> enchantments) {
+        this.itemStack.addUnsafeEnchantments(enchantments);
+        return this;
+    }
+
+    public ItemFactory addUnsafeEnchantments(List<Enchantment> enchantments, int level) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.addUnsafeEnchantment(enchant, level);
+        }
+        return this;
+    }
+
+    public ItemFactory addUnsafeEnchantments(int level, Enchantment... enchantments) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.addUnsafeEnchantment(enchant, level);
+        }
+        return this;
+    }
+
+    public ItemFactory addUnsafeEnchantment(Enchantment enchantment) {
+        this.itemStack.addUnsafeEnchantment(enchantment, 1);
+        return this;
+    }
+
+    public ItemFactory addUnsafeEnchantment(Enchantment enchantment, int level) {
         this.itemStack.addUnsafeEnchantment(enchantment, level);
+        return this;
+    }
+
+    public ItemFactory removeEnchantments(List<Enchantment> enchantments) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.removeEnchantment(enchant);
+        }
+        return this;
+    }
+
+    public ItemFactory removeEnchantments(Enchantment... enchantments) {
+        for(Enchantment enchant : enchantments) {
+            this.itemStack.removeEnchantment(enchant);
+        }
         return this;
     }
 
