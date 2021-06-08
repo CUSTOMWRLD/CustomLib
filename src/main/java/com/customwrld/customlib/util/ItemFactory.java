@@ -41,6 +41,7 @@ public class ItemFactory {
     public ItemFactory setName(String name) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setDisplayName(CC.translate("&r" + name));
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -57,12 +58,14 @@ public class ItemFactory {
     public ItemFactory setUnbreakable(boolean unbreakable) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setUnbreakable(unbreakable);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setModel(int model) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setCustomModelData(model);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -125,12 +128,14 @@ public class ItemFactory {
     public ItemFactory setLore(List<String> lore) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setLore(String... lore) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setLore(Arrays.asList(lore));
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -257,6 +262,7 @@ public class ItemFactory {
     public ItemFactory clearLore() {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.setLore(Collections.emptyList());
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -362,24 +368,28 @@ public class ItemFactory {
     public ItemFactory addFlags(List<ItemFlag> flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory addFlags(ItemFlag... flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addItemFlags(flags);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeFlags(List<ItemFlag> flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeItemFlags(flags.toArray(new ItemFlag[0]));
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeFlags(ItemFlag... flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeItemFlags(flags);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -393,12 +403,14 @@ public class ItemFactory {
     public ItemFactory addAttribute(Attribute attribute, AttributeModifier modifier) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addAttributeModifier(attribute, modifier);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeAttribute(EquipmentSlot slot) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(slot);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
@@ -419,12 +431,14 @@ public class ItemFactory {
     public ItemFactory removeAttribute(Attribute attribute) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(attribute);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeAttribute(Attribute attribute, AttributeModifier modifier) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(attribute, modifier);
+        this.itemStack.setItemMeta(meta);
         return this;
     }
 
