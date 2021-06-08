@@ -359,9 +359,21 @@ public class ItemFactory {
         return this;
     }
 
+    public ItemFactory addFlags(List<ItemFlag> flags) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.addItemFlags(flags.toArray(new ItemFlag[0]));
+        return this;
+    }
+
     public ItemFactory addFlags(ItemFlag... flags) {
         ItemMeta meta = this.itemStack.getItemMeta();
         meta.addItemFlags(flags);
+        return this;
+    }
+
+    public ItemFactory removeFlags(List<ItemFlag> flags) {
+        ItemMeta meta = this.itemStack.getItemMeta();
+        meta.removeItemFlags(flags.toArray(new ItemFlag[0]));
         return this;
     }
 
