@@ -273,7 +273,7 @@ public class ItemFactory {
 
     public ItemFactory addEnchantments(List<Enchantment> enchantments) {
         for(Enchantment enchant : enchantments) {
-            this.itemStack.addEnchantment(enchant, 1);
+            this.itemStack.addEnchantment(enchant, 0);
         }
         return this;
     }
@@ -294,13 +294,13 @@ public class ItemFactory {
 
     public ItemFactory addEnchantments(Enchantment... enchantments) {
         for(Enchantment enchant : enchantments) {
-            this.itemStack.addEnchantment(enchant, 1);
+            this.itemStack.addEnchantment(enchant, 0);
         }
         return this;
     }
 
     public ItemFactory addEnchantment(Enchantment enchantment) {
-        this.itemStack.addEnchantment(enchantment, 1);
+        this.itemStack.addEnchantment(enchantment, 0);
         return this;
     }
 
@@ -329,7 +329,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addUnsafeEnchantment(Enchantment enchantment) {
-        this.itemStack.addUnsafeEnchantment(enchantment, 1);
+        this.itemStack.addUnsafeEnchantment(enchantment, 0);
         return this;
     }
 
