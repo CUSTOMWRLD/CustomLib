@@ -50,7 +50,7 @@ public class NPC {
     }
 
     private String generateRandom() {
-        return RandomStringUtils.randomAlphanumeric(8).toLowerCase();
+        return RandomStringUtils.randomAlphanumeric(8);
     }
 
     public void setLocation(Location location) {

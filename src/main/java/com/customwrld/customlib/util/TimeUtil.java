@@ -31,6 +31,15 @@ public final class TimeUtil {
         return dateFormat.format(date);
     }
 
+    public static String dateToTime(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss a");
+
+        return dateFormat.format(date);
+    }
+
     public static Timestamp fromMillis(long millis) {
         return new Timestamp(millis);
     }
