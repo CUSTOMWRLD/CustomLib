@@ -176,14 +176,15 @@ public class CC {
         return builder.toString();
     }
 
-    public static TextComponent gradientComponent(TextComponent target, Color from, Color to) {
-        ComponentBuilder builder = new ComponentBuilder().retain(ComponentBuilder.FormatRetention.ALL);
-        String text = target.toPlainText();
-        int charAmount = text.length();
-
-        gradientComponentInternal(builder, target, from, to, 0, charAmount);
-        return ChatUtil.builderToComponent(builder);
-    }
+    // TODO: Fix
+//    public static TextComponent gradientComponent(TextComponent target, Color from, Color to) {
+//        ComponentBuilder builder = new ComponentBuilder().retain(ComponentBuilder.FormatRetention.ALL);
+//        String text = target.toPlainText();
+//        int charAmount = text.length();
+//
+//        gradientComponentInternal(builder, target, from, to, 0, charAmount);
+//        return ChatUtil.builderToComponent(builder);
+//    }
 
     private static int gradientComponentInternal(ComponentBuilder builder, TextComponent current, Color from, Color to, int step, int steps) {
         String text = current.getText();
