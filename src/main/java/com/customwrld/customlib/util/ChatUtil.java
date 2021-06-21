@@ -1,24 +1,28 @@
 package com.customwrld.customlib.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.apache.commons.lang3.StringUtils;
 
 public class ChatUtil {
 
-//    public static TextComponent healthToHearts(double health, double maxHealth, double heartScale, boolean displayAmount) {
-//        int allHearts = Math.floorDiv((int) maxHealth, (int) heartScale);
-//        int fullHearts = Math.floorDiv((int) health, (int) heartScale);
-//        boolean halfHeart = (maxHealth - health) % heartScale != 0;
-//        int emptyHearts = allHearts - fullHearts - (halfHeart ? 1 : 0);
-//
-//        return Component.text(StringUtils.repeat("❤", fullHearts))
-//                .color(NamedTextColor.DARK_RED)
-//                .append(halfHeart ? Component.text("❤")
-//                        .color(NamedTextColor.RED) : Component.empty())
-//                .append(Component.text(StringUtils.repeat("❤", emptyHearts))
-//                        .color(NamedTextColor.DARK_GRAY))
-//                .append(displayAmount ? Component.text(" (" + (int) health + "/" + (int) maxHealth + ")")
-//                        .color(NamedTextColor.WHITE) : Component.empty());
-//    }
+    public static Component healthToHearts(double health, double maxHealth, double heartScale, boolean displayAmount) {
+        int allHearts = Math.floorDiv((int) maxHealth, (int) heartScale);
+        int fullHearts = Math.floorDiv((int) health, (int) heartScale);
+        boolean halfHeart = (maxHealth - health) % heartScale != 0;
+        int emptyHearts = allHearts - fullHearts - (halfHeart ? 1 : 0);
+
+        return Component.text()
+                .append(Component.text(StringUtils.repeat("❤", fullHearts)).color(NamedTextColor.DARK_RED))
+                .append(halfHeart ? Component.text("❤")
+                        .color(NamedTextColor.RED) : Component.empty())
+                .append(Component.text(StringUtils.repeat("❤", emptyHearts))
+                        .color(NamedTextColor.DARK_GRAY))
+                .append(displayAmount ? Component.text(" (" + (int) health + "/" + (int) maxHealth + ")")
+                        .color(NamedTextColor.WHITE) : Component.empty())
+                .build();
+    }
 
 //        public static TextComponent levelProgressMessage(int lvl, int nextLvl, long exp, long nextLevelExp, Color currentColor, Color nextColor, boolean displayTitle, boolean displayLevels, boolean displayUnder) {
 //            net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent();

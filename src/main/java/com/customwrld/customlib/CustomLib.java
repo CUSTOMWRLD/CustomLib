@@ -30,6 +30,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class CustomLib extends JavaPlugin implements Listener {
@@ -93,7 +94,7 @@ public class CustomLib extends JavaPlugin implements Listener {
         this.pigeon.getPayloadsRegistry()
                 .registerPayloadsInPackage("com.customwrld.customlib.pigeon.payloads");
 
-        this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon);
+        this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon, this);
         this.commonLib.setBukkitLoaded(true);
 
         new BukkitRunnable() {
@@ -141,6 +142,6 @@ public class CustomLib extends JavaPlugin implements Listener {
         int port = this.mainConfig.getInt("RABBITMQ.PORT");
 
         this.pigeon = new Pigeon();
-        this.pigeon.initialize(host, port, "customwrld", "minecraft-hub0");
+        this.pigeon.initialize(host, port, "customwrld", "minecraft-server" + new Random().nextInt());
     }
 }
