@@ -9,12 +9,15 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 public class HologramTextComponent extends AbstractHologramComponent {
 
     @Getter private String text;
+    @Getter private Location location;
     @Getter private EntityArmorStand armorStand;
 
     /**
@@ -26,30 +29,34 @@ public class HologramTextComponent extends AbstractHologramComponent {
     }
 
     @Override
-    public void create(Location location, List<Player> viewers) {
-        this.armorStand = new EntityArmorStand(((CraftWorld)location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
+    public void create(@Nullable Location location, List<Player> viewers) {
+        if(location == null) { location = this.location; } else { this.location = location; }
 
-        armorStand.setCustomNameVisible(text.length() >= 1);
-        armorStand.setCustomName(CraftChatMessage.fromStringOrNull(CC.translate(null, text)));
+        if(this.armorStand == null) {
+            this.armorStand = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
 
-        armorStand.setNoGravity(true);
-        armorStand.setMarker(true);
-        armorStand.setInvisible(true);
+            this.armorStand.setCustomNameVisible(this.text.length() >= 1);
+            this.armorStand.setCustomName(CraftChatMessage.fromStringOrNull(CC.translate(null, this.text)));
+
+            this.armorStand.setNoGravity(true);
+            this.armorStand.setMarker(true);
+            this.armorStand.setInvisible(true);
+        }
 
         viewers.forEach(player -> {
-            NMSUtil.sendPacket(player, new PacketPlayOutSpawnEntityLiving(armorStand));
-            NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
+            NMSUtil.sendPacket(player, new PacketPlayOutSpawnEntityLiving(this.armorStand));
+            NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(this.armorStand.getId(), this.armorStand.getDataWatcher(), true));
         });
     }
 
     @Override
     public void clear(Player player) {
-        NMSUtil.sendPacket(player, new PacketPlayOutEntityDestroy(armorStand.getId()));
+        NMSUtil.sendPacket(player, new PacketPlayOutEntityDestroy(this.armorStand.getId()));
     }
 
     @Override
     public void update(Player player) {
-        setText(text, player);
+        setText(this.text, player);
     }
 
     @Override
@@ -59,13 +66,17 @@ public class HologramTextComponent extends AbstractHologramComponent {
 
     @Override
     public void setLocation(Location location) {
-        armorStand.setLocation(location.getX(), location.getY() - 0.4, location.getZ(), location.getYaw(), location.getPitch());
-        this.getParent().viewers.forEach(player -> NMSUtil.sendPacket(player, new PacketPlayOutEntityTeleport(armorStand)));
+        this.location = location;
+
+        if(this.armorStand != null) {
+            this.armorStand.setLocation(location.getX(), location.getY() - 0.4, location.getZ(), location.getYaw(), location.getPitch());
+            this.getParent().viewers.forEach(player -> NMSUtil.sendPacket(player, new PacketPlayOutEntityTeleport(this.armorStand)));
+        }
     }
 
     @Override
     public AbstractHologramComponent clone(Hologram newParent) {
-        HologramTextComponent clone = new HologramTextComponent(text);
+        var clone = new HologramTextComponent(this.text);
         if(this.location != null) { clone.location = this.location.clone(); }
         clone.armorStand = this.armorStand;
         clone.setParent(newParent);
