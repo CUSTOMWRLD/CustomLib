@@ -58,6 +58,27 @@ public class LocationUtil {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
+    public static Location lerp(Location from, Location to, double t) {
+        if(from.getWorld() != to.getWorld()) { return null; }
+
+        Location interpolated = from.clone();
+
+        double minX = Math.min(from.getX(), to.getX());
+        double maxX = Math.max(from.getX(), to.getX());
+
+        double minY = Math.min(from.getY(), to.getY());
+        double maxY = Math.max(from.getY(), to.getY());
+
+        double minZ = Math.min(from.getZ(), to.getZ());
+        double maxZ = Math.max(from.getZ(), to.getZ());
+
+        interpolated.setX(minX + ((maxX - minX) * t));
+        interpolated.setY(minY + ((maxY - minY) * t));
+        interpolated.setZ(minZ + ((maxZ - minZ) * t));
+
+        return interpolated;
+    }
+
     public static Location absoluteLocation(Location location) {
         return location.clone().set(Math.abs(location.getX()), Math.abs(location.getY()), Math.abs(location.getZ()));
     }
@@ -129,7 +150,7 @@ public class LocationUtil {
     }
 
     /***
-     * Allows you to copy angles (Pitch & Yaw) from one {@link Location} to another.
+     * Allows you to copy angles (Pitch &amp; Yaw) from one {@link Location} to another.
      * Both modifies the "to" {@link Location} and returns the modified location (not a copy) to allow for partial chaining.
      */
     public static Location copyAngles(@NotNull Location from, @NotNull Location to) {
@@ -191,7 +212,7 @@ public class LocationUtil {
     public static Location getHighestLocationFromMultiple(Location... locations) {
         Location highest = locations[0];
         for(Location location : locations) {
-            if(highest.getY() > location.getY()) { highest = location; }
+            if(location.getY() > highest.getY()) { highest = location; }
         }
         return highest;
     }
@@ -210,34 +231,34 @@ public class LocationUtil {
      */
     public static Location toHighestLocationAccurate(Location location) {
 
-        Location highestLocation = location;
+        var highestLocation = location.toHighestLocation();
 
-        boolean onSideX = MathUtil.isIntegral(location.getX());
-        boolean onSideZ = MathUtil.isIntegral(location.getZ());
+        boolean isAlongX = MathUtil.isIntegral(location.getZ());
+        boolean isAlongZ = MathUtil.isIntegral(location.getX());
 
-        boolean onCorner = onSideX && onSideZ;
+        boolean onCorner = isAlongZ && isAlongX;
 
         //Is on a corner
         if(onCorner) {
             highestLocation = getHighestLocationFromMultiple(
-                    location.clone().subtract(-1, 0, -1).toHighestLocation(),   //BL
-                    location.clone().subtract(-1, 0, 0).toHighestLocation(),    //TL
-                    location.toHighestLocation(),                                       //TR
+                    location.clone().subtract(-1, 0, -1).toHighestLocation(),    //BL
+                    location.clone().subtract(-1, 0, 0).toHighestLocation(),     //TL
+                    highestLocation,                                        //TR
                     location.clone().subtract(0, 0, -1).toHighestLocation());   //BR
-        }
+        } else {
+            //Is on side (Perfectly aligned to the X axis)
+            if (isAlongX) {
+                highestLocation = getHighestLocationFromMultiple(
+                        location.clone().subtract(0, 0, 1).toHighestLocation(),
+                        highestLocation);
+            }
 
-        //Is on side (Across X axis)
-        if(onSideX) {
-            highestLocation = getHighestLocationFromMultiple(
-                    location.clone().subtract(-1, 0, 0).toHighestLocation(),
-                    location.toHighestLocation());
-        }
-
-        //Is on side (Across Z axis)
-        if(onSideZ) {
-            highestLocation = getHighestLocationFromMultiple(
-                    location.clone().subtract(0, 0, -1).toHighestLocation(),
-                    location.toHighestLocation());
+            //Is on side (Perfectly aligned to the Z axis)
+            if (isAlongZ) {
+                highestLocation = getHighestLocationFromMultiple(
+                        location.clone().subtract(1, 0, 0).toHighestLocation(),
+                        highestLocation);
+            }
         }
 
         return highestLocation.set(location.getX(), highestLocation.getY(), location.getZ());
