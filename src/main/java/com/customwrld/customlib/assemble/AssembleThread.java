@@ -1,6 +1,6 @@
 package com.customwrld.customlib.assemble;
 
-import com.customwrld.customlib.util.CC;
+import com.customwrld.customlib.util.MC;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -45,7 +45,7 @@ public class AssembleThread extends Thread {
                     continue;
                 }
 
-                String title = CC.translate(this.assemble.getAdapter().getTitle(player));
+                String title = MC.Style.translateLegacy(this.assemble.getAdapter().getTitle(player));
 
                 if (!objective.getDisplayName().equals(title)) {
                     objective.setDisplayName(title);
@@ -79,7 +79,7 @@ public class AssembleThread extends Thread {
                     for (int i = 0; i < newLines.size(); i++) {
                         AssembleBoardEntry entry = board.getEntryAtPosition(i);
 
-                        String line = CC.translate(newLines.get(i));
+                        String line = MC.Style.translateLegacy(newLines.get(i));
 
                         if (entry == null) {
                             entry = new AssembleBoardEntry(board, line, i);

@@ -1,7 +1,7 @@
 package com.customwrld.customlib.hologram.component;
 
 import com.customwrld.customlib.hologram.Hologram;
-import com.customwrld.customlib.util.CC;
+import com.customwrld.customlib.util.MC;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;
@@ -26,7 +26,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
         this.armorStand = new EntityArmorStand(((CraftWorld)location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
 
         armorStand.setCustomNameVisible(text.length() >= 1);
-        armorStand.setCustomName(CraftChatMessage.fromStringOrNull(CC.translate(null, text)));
+        armorStand.setCustomName(CraftChatMessage.fromStringOrNull(MC.Style.translatePAPI(null, text)));
 
         armorStand.setNoGravity(true);
         armorStand.setMarker(true);
@@ -74,7 +74,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
     }
 
     public void setText(String text, Player player) {
-        armorStand.setCustomName(new ChatMessage(CC.translate(player, text)));
+        armorStand.setCustomName(new ChatMessage(MC.Style.translatePAPI(player, text)));
 
         NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
     }

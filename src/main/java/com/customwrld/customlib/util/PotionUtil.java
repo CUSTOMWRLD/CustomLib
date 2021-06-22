@@ -41,8 +41,8 @@ public enum PotionUtil {
     BAD_OMEN(PotionEffectType.BAD_OMEN, "bad_omen", "Bad Omen"),
     HERO_OF_THE_VILLAGE(PotionEffectType.HERO_OF_THE_VILLAGE, "hero_of_the_village", "Hero of The Village");
 
-    private PotionEffectType type;
-    private String name;
-    private String display;
+    private final PotionEffectType type;
+    private final String name;
+    private final String display;
 
 }

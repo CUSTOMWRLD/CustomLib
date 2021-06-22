@@ -4,7 +4,7 @@ import com.customwrld.customlib.CustomLib;
 import com.customwrld.customlib.cache.ClazzCache;
 import com.customwrld.customlib.hologram.Hologram;
 import com.customwrld.customlib.hologram.component.AbstractHologramComponent;
-import com.customwrld.customlib.util.CC;
+import com.customwrld.customlib.util.MC;
 import com.customwrld.customlib.util.NMSUtil;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -42,7 +42,7 @@ public class NPC {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
 
-        gameProfile = new GameProfile(UUID.randomUUID(), CC.translate("&8[NPC] " + generateRandom()));
+        gameProfile = new GameProfile(UUID.randomUUID(), MC.Style.translateLegacy("&8[NPC] " + generateRandom()));
         gameProfile.getProperties().put("textures", new Property("textures", skin, signature));
         entityNPC = new EntityPlayer(nmsServer, nmsWorld, gameProfile, new PlayerInteractManager(nmsWorld));
 
