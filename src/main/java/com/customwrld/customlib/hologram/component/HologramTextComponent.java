@@ -83,7 +83,16 @@ public class HologramTextComponent extends AbstractHologramComponent {
         NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
     }
 
-    public void setText(String text, List<Player> players) {
+    /**
+     * @param text Text to set
+     * @param players Players to set the text for, if null it calls {@link HologramTextComponent#setText(String)}
+     */
+    public void setText(String text, @Nullable Collection<Player> players) {
+        if(players == null) {
+            setText(text);
+            return;
+        }
+
         players.forEach(player -> setText(text, player));
     }
 
