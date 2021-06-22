@@ -30,7 +30,7 @@ public class Hologram {
     public void render() {
         Location origin = location.clone();
         for (AbstractHologramComponent component : children) {
-            component.create(origin, viewers);
+            component.create(origin.clone(), viewers);
             origin.subtract(0, component.getHeight(), 0);
         }
     }
@@ -39,7 +39,7 @@ public class Hologram {
         viewers.add(player);
         Location origin = location.clone();
         for (AbstractHologramComponent component : children) {
-            component.create(origin, Collections.singletonList(player));
+            component.create(origin.clone(), Collections.singletonList(player));
             origin.subtract(0, component.getHeight(), 0);
         }
     }
@@ -54,7 +54,7 @@ public class Hologram {
     public void setLocation(Location location) {
         Location origin = location.clone();
         for (AbstractHologramComponent component : children) {
-            component.setLocation(origin);
+            component.setLocation(origin.clone());
             origin.subtract(0, component.getHeight(), 0);
         }
     }
