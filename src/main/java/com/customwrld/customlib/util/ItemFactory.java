@@ -2,7 +2,6 @@ package com.customwrld.customlib.util;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -39,7 +38,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setName(String name) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.setDisplayName(CC.translate("&r" + name));
         this.itemStack.setItemMeta(meta);
         return this;
@@ -56,21 +55,21 @@ public class ItemFactory {
     }
 
     public ItemFactory setUnbreakable(boolean unbreakable) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.setUnbreakable(unbreakable);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setModel(int model) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.setCustomModelData(model);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setDamage(int damage) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof Damageable))
             throw new UnsupportedOperationException("Tried to use setDamage on ItemMeta that isn't Damageable.");
@@ -81,7 +80,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setLeatherColor(Color color) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof LeatherArmorMeta))
             throw new UnsupportedOperationException("Tried to use setColor on ItemMeta that isn't LeatherArmorMeta.");
@@ -92,7 +91,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setSkin(String skin, String signature) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
 
         profile.getProperties().add(new ProfileProperty("textures", skin, signature));
@@ -104,7 +103,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setPlayerProfile(PlayerProfile profile) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SkullMeta))
             throw new UnsupportedOperationException("Tried to use setPlayerProfile on ItemMeta that isn't SkullMeta.");
@@ -115,7 +114,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setOwningPlayer(OfflinePlayer player) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SkullMeta))
             throw new UnsupportedOperationException("Tried to use setOwningPlayer on ItemMeta that isn't SkullMeta.");
@@ -126,40 +125,69 @@ public class ItemFactory {
     }
 
     public ItemFactory setLore(List<String> lore) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setLore(String... lore) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.setLore(Arrays.asList(lore));
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setLoreLine(String line, int index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
-
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
         lore.set(index, line);
         meta.setLore(lore);
+        
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
+    public ItemFactory addLoreLines(Collection<String> lines) {
+        var meta = this.itemStack.getItemMeta();
+
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
+
+        lore.addAll(lore.size(), lines);
+
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+
+        return this;
+    }
+
+    public ItemFactory addLoreLines(String... lines) {
+        var meta = this.itemStack.getItemMeta();
+
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
+
+        lore.addAll(lore.size(), Arrays.asList(lines));
+
+        meta.setLore(lore);
+        this.itemStack.setItemMeta(meta);
+        
+        return this;
+    }
+
     public ItemFactory addLoreLines(SortedMap<Integer, String> lines) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
-
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
         TreeMap<Integer, String> sortedLines = new TreeMap<>(lines);
         for(int index : sortedLines.descendingKeySet()){
@@ -168,49 +196,44 @@ public class ItemFactory {
 
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
-    public ItemFactory addLoreLines(List<String> lines, int index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+    public ItemFactory addLoreLines(Collection<String> lines, int index) {
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
-
-        Collections.reverse(lines);
-        for(String line : lines) {
-            lore.add(index, line);
-        }
+        lore.addAll(index, lines);
 
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
     public ItemFactory addLoreLines(int index, String... lines) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
-
-        ArrayUtils.reverse(lines);
-        for(String line : lines) {
-            lore.add(index, line);
-        }
+        lore.addAll(index, Arrays.asList(lines));
 
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
     public ItemFactory addLoreLine(String line) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        int index = 0;
+        var index = 0;
         if(meta.getLore() != null)
             index = meta.getLore().size();
 
@@ -218,51 +241,56 @@ public class ItemFactory {
     }
 
     public ItemFactory addLoreLine(String line, int index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
-
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
         lore.add(index, line);
+        
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
     public ItemFactory removeLoreLine(String line) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
-
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
         lore.remove(line);
+        
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
     public ItemFactory removeLoreLine(int index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = new ArrayList<>();
-
-        if(meta.getLore() != null && meta.hasLore())
-            lore = new ArrayList<>(meta.getLore());
+        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+                new ArrayList<>(meta.getLore()) :
+                new ArrayList<>();
 
         lore.remove(index);
+        
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
     public ItemFactory clearLore() {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
+
         meta.setLore(Collections.emptyList());
         this.itemStack.setItemMeta(meta);
+        
         return this;
     }
 
@@ -271,14 +299,14 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory addEnchantments(List<Enchantment> enchantments) {
+    public ItemFactory addEnchantments(Collection<Enchantment> enchantments) {
         for(Enchantment enchant : enchantments) {
             this.itemStack.addEnchantment(enchant, 0);
         }
         return this;
     }
 
-    public ItemFactory addEnchantments(List<Enchantment> enchantments, int level) {
+    public ItemFactory addEnchantments(Collection<Enchantment> enchantments, int level) {
         for(Enchantment enchant : enchantments) {
             this.itemStack.addEnchantment(enchant, level);
         }
@@ -314,7 +342,7 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory addUnsafeEnchantments(List<Enchantment> enchantments, int level) {
+    public ItemFactory addUnsafeEnchantments(Collection<Enchantment> enchantments, int level) {
         for(Enchantment enchant : enchantments) {
             this.itemStack.addUnsafeEnchantment(enchant, level);
         }
@@ -338,7 +366,7 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory removeEnchantments(List<Enchantment> enchantments) {
+    public ItemFactory removeEnchantments(Collection<Enchantment> enchantments) {
         for(Enchantment enchant : enchantments) {
             this.itemStack.removeEnchantment(enchant);
         }
@@ -365,29 +393,29 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory addFlags(List<ItemFlag> flags) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+    public ItemFactory addFlags(Collection<ItemFlag> flags) {
+        var meta = this.itemStack.getItemMeta();
         meta.addItemFlags(flags.toArray(new ItemFlag[0]));
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory addFlags(ItemFlag... flags) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.addItemFlags(flags);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemFactory removeFlags(List<ItemFlag> flags) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+    public ItemFactory removeFlags(Collection<ItemFlag> flags) {
+        var meta = this.itemStack.getItemMeta();
         meta.removeItemFlags(flags.toArray(new ItemFlag[0]));
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeFlags(ItemFlag... flags) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.removeItemFlags(flags);
         this.itemStack.setItemMeta(meta);
         return this;
@@ -401,20 +429,20 @@ public class ItemFactory {
     }
 
     public ItemFactory addAttribute(Attribute attribute, AttributeModifier modifier) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.addAttributeModifier(attribute, modifier);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeAttribute(EquipmentSlot slot) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(slot);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemFactory removeAttributes(List<Attribute> attributes) {
+    public ItemFactory removeAttributes(Collection<Attribute> attributes) {
         for(Attribute attribute : attributes) {
             removeAttribute(attribute);
         }
@@ -429,21 +457,21 @@ public class ItemFactory {
     }
 
     public ItemFactory removeAttribute(Attribute attribute) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(attribute);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory removeAttribute(Attribute attribute, AttributeModifier modifier) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
         meta.removeAttributeModifier(attribute, modifier);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setPotionColor(Color color) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
             throw new UnsupportedOperationException("Tried to use setColor on ItemMeta that isn't PotionMeta.");
@@ -454,7 +482,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setPotionData(PotionData potionData) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
                 throw new UnsupportedOperationException("Tried to use setBasePotionData on ItemMeta that isn't PotionMeta.");
@@ -464,8 +492,8 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory addPotionEffects(List<PotionEffect> effects) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+    public ItemFactory addPotionEffects(Collection<PotionEffect> effects) {
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
             throw new UnsupportedOperationException("Tried to use addCustomEffect on ItemMeta that isn't PotionMeta.");
@@ -477,7 +505,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addPotionEffects(PotionEffect... effects) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
             throw new UnsupportedOperationException("Tried to use addCustomEffect on ItemMeta that isn't PotionMeta.");
@@ -488,8 +516,8 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory removePotionEffects(List<PotionEffectType> types) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+    public ItemFactory removePotionEffects(Collection<PotionEffectType> types) {
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
             throw new UnsupportedOperationException("Tried to use removeCustomEffect on ItemMeta that isn't PotionMeta.");
@@ -501,7 +529,7 @@ public class ItemFactory {
     }
 
     public ItemFactory removePotionEffects(PotionEffectType... types) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof PotionMeta))
             throw new UnsupportedOperationException("Tried to use removeCustomEffect on ItemMeta that isn't PotionMeta.");
@@ -513,7 +541,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBannerPatterns(List<Pattern> patterns) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
             throw new UnsupportedOperationException("Tried to use setPatterns on ItemMeta that isn't BannerMeta.");
@@ -524,7 +552,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBannerPatterns(Pattern... patterns) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
             throw new UnsupportedOperationException("Tried to use setPatterns on ItemMeta that isn't BannerMeta.");
@@ -535,7 +563,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBannerPattern(Pattern pattern, Integer index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
             throw new UnsupportedOperationException("Tried to use setPattern on ItemMeta that isn't BannerMeta.");
@@ -546,7 +574,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addBannerPattern(Pattern pattern) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
             throw new UnsupportedOperationException("Tried to use addPattern on ItemMeta that isn't BannerMeta.");
@@ -557,7 +585,7 @@ public class ItemFactory {
     }
 
     public ItemFactory removeBannerPattern(int index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
             throw new UnsupportedOperationException("Tried to use removePattern on ItemMeta that isn't BannerMeta.");
@@ -568,7 +596,7 @@ public class ItemFactory {
     }
 
     public ItemFactory clearBannerPatterns() {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BannerMeta))
             throw new UnsupportedOperationException("Tried to use removePattern on ItemMeta that isn't BannerMeta.");
@@ -582,7 +610,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBookPages(List<String> pages) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
             throw new UnsupportedOperationException("Tried to use setPages on ItemMeta that isn't BookMeta.");
@@ -593,7 +621,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBookPages(String... pages) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
             throw new UnsupportedOperationException("Tried to use setPages on ItemMeta that isn't BookMeta.");
@@ -604,7 +632,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBookAuthor(String author) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
             throw new UnsupportedOperationException("Tried to use setAuthor on ItemMeta that isn't BookMeta.");
@@ -615,7 +643,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBookGeneration(BookMeta.Generation generation) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
             throw new UnsupportedOperationException("Tried to use setGeneration on ItemMeta that isn't BookMeta.");
@@ -626,7 +654,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBookTitle(String title) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
             throw new UnsupportedOperationException("Tried to use setTitle on ItemMeta that isn't BookMeta.");
@@ -637,7 +665,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBookPage(int page, String data) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BookMeta))
             throw new UnsupportedOperationException("Tried to use setPage on ItemMeta that isn't BookMeta.");
@@ -648,7 +676,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setCompassLodestone(Location lodestone) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CompassMeta))
             throw new UnsupportedOperationException("Tried to use setLodestone on ItemMeta that isn't CompassMeta.");
@@ -659,7 +687,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setCompassLodestoneTracked(boolean tracked) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CompassMeta))
             throw new UnsupportedOperationException("Tried to use setLodestoneTracked on ItemMeta that isn't CompassMeta.");
@@ -670,7 +698,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setCrossbowChargedProjectiles(List<ItemStack> projectiles) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CrossbowMeta))
             throw new UnsupportedOperationException("Tried to use setChargedProjectiles on ItemMeta that isn't CrossbowMeta.");
@@ -681,7 +709,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setCrossbowChargedProjectiles(ItemStack... projectiles) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CrossbowMeta))
             throw new UnsupportedOperationException("Tried to use setChargedProjectiles on ItemMeta that isn't CrossbowMeta.");
@@ -692,7 +720,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addCrossbowChargedProjectile(ItemStack projectile) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof CrossbowMeta))
             throw new UnsupportedOperationException("Tried to use addChargedProjectile on ItemMeta that isn't CrossbowMeta.");
@@ -703,7 +731,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setMapColor(Color color) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
             throw new UnsupportedOperationException("Tried to use setColor on ItemMeta that isn't MapMeta.");
@@ -714,7 +742,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setMapLocationName(String name) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
             throw new UnsupportedOperationException("Tried to use setLocationName on ItemMeta that isn't MapMeta.");
@@ -725,7 +753,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setMapView(MapView mapView) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
             throw new UnsupportedOperationException("Tried to use setMapView on ItemMeta that isn't MapMeta.");
@@ -736,7 +764,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setMapScaling(boolean scaling) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof MapMeta))
             throw new UnsupportedOperationException("Tried to use setScaling on ItemMeta that isn't MapMeta.");
@@ -747,7 +775,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setKnowledgeBookRecipes(List<NamespacedKey> recipes) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof KnowledgeBookMeta))
             throw new UnsupportedOperationException("Tried to use setRecipes on ItemMeta that isn't KnowledgeBookMeta.");
@@ -758,7 +786,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setKnowledgeBookRecipes(NamespacedKey... recipes) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof KnowledgeBookMeta))
             throw new UnsupportedOperationException("Tried to use setRecipes on ItemMeta that isn't KnowledgeBookMeta.");
@@ -769,7 +797,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addKnowledgeBookRecipes(NamespacedKey... recipes) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof KnowledgeBookMeta))
             throw new UnsupportedOperationException("Tried to use addRecipe on ItemMeta that isn't KnowledgeBookMeta.");
@@ -780,7 +808,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setRocketEffect(FireworkEffect fireworkEffect) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkEffectMeta))
             throw new UnsupportedOperationException("Tried to use setEffect on ItemMeta that isn't FireworkEffectMeta.");
@@ -791,7 +819,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setRocketPower(int power) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
             throw new UnsupportedOperationException("Tried to use setPower on ItemMeta that isn't FireworkMeta.");
@@ -802,7 +830,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addRocketEffect(FireworkEffect fireworkEffect) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
             throw new UnsupportedOperationException("Tried to use addEffect on ItemMeta that isn't FireworkMeta.");
@@ -813,7 +841,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addRocketEffects(Iterable<FireworkEffect> fireworkEffect) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
             throw new UnsupportedOperationException("Tried to use addEffects on ItemMeta that isn't FireworkMeta.");
@@ -824,7 +852,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addRocketEffects(FireworkEffect... fireworkEffect) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
             throw new UnsupportedOperationException("Tried to use addEffects on ItemMeta that isn't FireworkMeta.");
@@ -835,7 +863,7 @@ public class ItemFactory {
     }
 
     public ItemFactory clearRocketEffects() {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
             throw new UnsupportedOperationException("Tried to use clearEffects on ItemMeta that isn't FireworkMeta.");
@@ -846,7 +874,7 @@ public class ItemFactory {
     }
 
     public ItemFactory removeRocketEffect(int index) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof FireworkMeta))
             throw new UnsupportedOperationException("Tried to use removeEffect on ItemMeta that isn't FireworkMeta.");
@@ -857,7 +885,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addStewEffect(PotionEffect potionEffect) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SuspiciousStewMeta))
             throw new UnsupportedOperationException("Tried to use addCustomEffect on ItemMeta that isn't SuspiciousStewMeta.");
@@ -868,7 +896,7 @@ public class ItemFactory {
     }
 
     public ItemFactory removeStewEffect(PotionEffectType type) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SuspiciousStewMeta))
             throw new UnsupportedOperationException("Tried to use removeCustomEffect on ItemMeta that isn't SuspiciousStewMeta.");
@@ -879,7 +907,7 @@ public class ItemFactory {
     }
 
     public ItemFactory clearStewEffects() {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof SuspiciousStewMeta))
             throw new UnsupportedOperationException("Tried to use clearCustomEffects on ItemMeta that isn't SuspiciousStewMeta.");
@@ -890,7 +918,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setFishColor(DyeColor color) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof TropicalFishBucketMeta))
             throw new UnsupportedOperationException("Tried to use setBodyColor on ItemMeta that isn't TropicalFishBucketMeta.");
@@ -901,7 +929,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setFishPatternColor(DyeColor color) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof TropicalFishBucketMeta))
             throw new UnsupportedOperationException("Tried to use setPatternColor on ItemMeta that isn't TropicalFishBucketMeta.");
@@ -912,7 +940,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setFishPattern(TropicalFish.Pattern pattern) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof TropicalFishBucketMeta))
             throw new UnsupportedOperationException("Tried to use setPattern on ItemMeta that isn't TropicalFishBucketMeta.");
@@ -923,7 +951,7 @@ public class ItemFactory {
     }
 
     public ItemFactory addStoredEnchantment(Enchantment enchantment, int level) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof EnchantmentStorageMeta))
             throw new UnsupportedOperationException("Tried to use addStoredEnchant on ItemMeta that isn't EnchantmentStorageMeta.");
@@ -934,7 +962,7 @@ public class ItemFactory {
     }
 
     public ItemFactory removeStoredEnchantment(Enchantment enchantment) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof EnchantmentStorageMeta))
             throw new UnsupportedOperationException("Tried to use removeStoredEnchant on ItemMeta that isn't EnchantmentStorageMeta.");
@@ -945,7 +973,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBlockState(BlockState state) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BlockStateMeta))
             throw new UnsupportedOperationException("Tried to use setBlockState on ItemMeta that isn't BlockStateMeta.");
@@ -956,7 +984,7 @@ public class ItemFactory {
     }
 
     public ItemFactory setBlockData(BlockData data) {
-        ItemMeta meta = this.itemStack.getItemMeta();
+        var meta = this.itemStack.getItemMeta();
 
         if (!(meta instanceof BlockDataMeta))
             throw new UnsupportedOperationException("Tried to use setBlockData on ItemMeta that isn't BlockDataMeta.");
