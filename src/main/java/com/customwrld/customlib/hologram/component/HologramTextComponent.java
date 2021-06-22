@@ -77,10 +77,18 @@ public class HologramTextComponent extends AbstractHologramComponent {
         this.getParent().viewers.forEach(player -> setText(text, player));
     }
 
-    public void setText(String text, Player player) {
-        armorStand.setCustomName(new ChatMessage(CC.translate(player, text)));
+    /**
+     * @param text Text to set
+     * @param player Player to set the text for, if null it calls {@link HologramTextComponent#setText(String)}
+     */
+    public void setText(String text, @Nullable Player player) {
+        if(player == null) {
+            setText(text);
+            return;
+        }
 
-        NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(armorStand.getId(), armorStand.getDataWatcher(), true));
+        this.armorStand.setCustomName(new ChatMessage(CC.translate(player, text)));
+        NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(this.armorStand.getId(), this.armorStand.getDataWatcher(), true));
     }
 
     /**
