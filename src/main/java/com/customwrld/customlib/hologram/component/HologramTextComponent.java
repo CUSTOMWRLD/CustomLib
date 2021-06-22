@@ -17,7 +17,11 @@ public class HologramTextComponent extends AbstractHologramComponent {
     @Getter private String text;
     @Getter private EntityArmorStand armorStand;
 
+    /**
+     * If you wish to create an empty hologram, use {@link HologramTextComponent#empty()}.
+     */
     public HologramTextComponent(String text) {
+        if(text.isEmpty()) { text = " "; }
         this.text = text;
     }
 
@@ -82,4 +86,18 @@ public class HologramTextComponent extends AbstractHologramComponent {
     public void setText(String text, List<Player> players) {
         players.forEach(player -> setText(text, player));
     }
+
+    /**
+     * This was made to avoid confusion when creating an empty hologram. <br>
+     * If you try to create an armorstand with an empty text using packets, it won't spawn. <br>
+     * This can happen often if you want to create holograms that are to be modified later. <br>
+     * A solution to this is to use a placeholder text for the armorstand and this is what this function does. <br>
+     * <br>
+     * If you wish to create a hologram with any text, use {@link HologramTextComponent#HologramTextComponent(String)}.
+     * @return An empty {@link HologramTextComponent}.
+     */
+    public static HologramTextComponent empty() {
+        return new HologramTextComponent(" ");
+    }
+
 }
