@@ -16,13 +16,13 @@ public class MetadataUtil {
         if(!metadatable.hasMetadata(key)) { return defaultValue; }
 
         List<MetadataValue> values = metadatable.getMetadata(key);
-        if(values.size() <= 0) { return defaultValue; }
+        if(values.isEmpty()) { return defaultValue; }
 
         Optional<MetadataValue> value = metadatable.getMetadata(key).stream()
                 .filter(v -> Objects.equals(v.getOwningPlugin(), owningPlugin))
                 .findFirst();
 
-        if(!value.isPresent()) {
+        if(value.isEmpty()) {
             if(set) { metadatable.setMetadata(key, new FixedMetadataValue(owningPlugin, defaultValue)); }
             return defaultValue;
         }
@@ -66,20 +66,11 @@ public class MetadataUtil {
         return (char) retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
     }
 
-    public static <T> T getValue(Metadatable metadatable, String key, Plugin owningPlugin, T defaultValue, Class<T> type, boolean set) {
-        Object value = retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
-        if(type.isInstance(value)) { return type.cast(value); } else { return defaultValue; }
-    }
-
     public static <T> List<T> getList(Metadatable metadatable, String key, Plugin owningPlugin, List<T> defaultList, Class<T> type, boolean set) {
-        List<T> list;
-
         List<?> genericList = getGenericList(metadatable, key, owningPlugin, defaultList, set);
         if(genericList.equals(defaultList)) { return defaultList; }
 
-        list = CollectionsUtil.genericListToType(genericList, type);
-
-        return list;
+        return CollectionsUtil.genericListToType(genericList, type);
     }
 
     public static <K, V> Map<K, V> getMap(Metadatable metadatable, String key, Plugin owningPlugin, Map<K, V> defaultMap, Class<K> keyType, Class<V> valueType, boolean set) {
@@ -94,25 +85,33 @@ public class MetadataUtil {
     }
 
     public static List<?> getGenericList(Metadatable metadatable, String key, Plugin owningPlugin, List<?> defaultList, boolean set) {
-        List<?> list;
-
         Object object = retrieveValueSafe(metadatable, key, owningPlugin, defaultList, set);
-        if(object.equals(defaultList)) { return defaultList; }
+        if(object == null || object.equals(defaultList)) { return defaultList; }
 
-        list = (List<?>) object;
-
-        return list;
+        return (List<?>) object;
     }
 
     public static Map<?, ?> getGenericMap(Metadatable metadatable, String key, Plugin owningPlugin, Map<?, ?> defaultMap, boolean set) {
         Map<?, ?> map;
 
         Object object = retrieveValueSafe(metadatable, key, owningPlugin, defaultMap, set);
-        if(object.equals(defaultMap)) { return defaultMap; }
+        if(object == null || object.equals(defaultMap)) { return defaultMap; }
 
         map = (Map<?, ?>) object;
 
         return map;
+    }
+
+    public static <T> T getValue(Metadatable metadatable, String key, Plugin owningPlugin, T defaultValue, Class<T> type, boolean set) {
+        Object value = retrieveValueSafe(metadatable, key, owningPlugin, defaultValue, set);
+        if(type.isInstance(value)) { return type.cast(value); } else { return defaultValue; }
+    }
+
+    public static void setValueIfNotExists(Metadatable metadatable, String key, Plugin owningPlugin, Object value) {
+        List<MetadataValue> metadata = metadatable.getMetadata(key);
+        if(metadata.isEmpty() || metadata.get(0) == null) {
+            metadatable.setMetadata(key, new FixedMetadataValue(owningPlugin, value));
+        }
     }
 
     public static List<?> removeFromList(Metadatable metadatable, String key, Plugin owningPlugin, int index) {
