@@ -110,12 +110,12 @@ public enum DefaultFontInfo {
     private final char character;
     private final int length;
 
-    public int getBoldLength(){
+    public int getBoldLength() {
         if(this == DefaultFontInfo.SPACE) return this.getLength();
         return this.length + 1;
     }
 
-    public static DefaultFontInfo getDefaultFontInfo(char c){
+    public static DefaultFontInfo getDefaultFontInfo(char c) {
         for(DefaultFontInfo dFI : DefaultFontInfo.values()){
             if(dFI.getCharacter() == c) return dFI;
         }

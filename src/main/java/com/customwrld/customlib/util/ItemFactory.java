@@ -2,6 +2,8 @@ package com.customwrld.customlib.util;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import net.kyori.adventure.text.Component;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -37,9 +39,9 @@ public class ItemFactory {
         this.itemStack = new ItemStack(material, amount);
     }
 
-    public ItemFactory setName(String name) {
+    public ItemFactory setName(Component name) {
         var meta = this.itemStack.getItemMeta();
-        meta.setDisplayName(CC.translate("&r" + name));
+        meta.displayName(name);
         this.itemStack.setItemMeta(meta);
         return this;
     }
@@ -124,30 +126,30 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory setLore(List<String> lore) {
+    public ItemFactory setLore(List<Component> lore) {
         var meta = this.itemStack.getItemMeta();
-        meta.setLore(lore);
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemFactory setLore(String... lore) {
+    public ItemFactory setLore(Component... lore) {
         var meta = this.itemStack.getItemMeta();
-        meta.setLore(Arrays.asList(lore));
+        meta.lore(Arrays.asList(lore));
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
-    public ItemFactory setLoreLine(String line, int index) {
+    public ItemFactory setLore(Component line, int index) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.set(index, line);
-        meta.setLore(lore);
-        
+        meta.lore(lore);
+
         this.itemStack.setItemMeta(meta);
         return this;
     }
@@ -178,119 +180,119 @@ public class ItemFactory {
 
         meta.setLore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
-    public ItemFactory addLoreLines(SortedMap<Integer, String> lines) {
+    public ItemFactory addLoreLines(SortedMap<Integer, Component> lines) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        TreeMap<Integer, String> sortedLines = new TreeMap<>(lines);
+        TreeMap<Integer, Component> sortedLines = new TreeMap<>(lines);
         for(int index : sortedLines.descendingKeySet()){
             lore.add(index, sortedLines.get(index));
         }
 
-        meta.setLore(lore);
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
-    public ItemFactory addLoreLines(Collection<String> lines, int index) {
+    public ItemFactory addLoreLines(Collection<Component> lines, int index) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+        List<Component> lore = (meta.hasLore() && meta.getLore() != null) ?
                 new ArrayList<>(meta.getLore()) :
                 new ArrayList<>();
 
         lore.addAll(index, lines);
 
-        meta.setLore(lore);
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
-    public ItemFactory addLoreLines(int index, String... lines) {
+    public ItemFactory addLoreLines(int index, Component... lines) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
+        List<Component> lore = (meta.hasLore() && meta.getLore() != null) ?
                 new ArrayList<>(meta.getLore()) :
                 new ArrayList<>();
 
         lore.addAll(index, Arrays.asList(lines));
 
-        meta.setLore(lore);
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
-    public ItemFactory addLoreLine(String line) {
+    public ItemFactory addLoreLine(Component line) {
         var meta = this.itemStack.getItemMeta();
 
         var index = 0;
-        if(meta.getLore() != null)
-            index = meta.getLore().size();
+        if(meta.lore() != null)
+            index = meta.lore().size();
 
         return addLoreLine(line, index);
     }
 
-    public ItemFactory addLoreLine(String line, int index) {
+    public ItemFactory addLoreLine(Component line, int index) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.add(index, line);
-        
-        meta.setLore(lore);
+
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
-    public ItemFactory removeLoreLine(String line) {
+    public ItemFactory removeLoreLine(Component line) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.remove(line);
-        
-        meta.setLore(lore);
+
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
     public ItemFactory removeLoreLine(int index) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.remove(index);
-        
-        meta.setLore(lore);
+
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 
     public ItemFactory clearLore() {
         var meta = this.itemStack.getItemMeta();
 
-        meta.setLore(Collections.emptyList());
+        meta.lore(Collections.emptyList());
         this.itemStack.setItemMeta(meta);
-        
+
         return this;
     }
 

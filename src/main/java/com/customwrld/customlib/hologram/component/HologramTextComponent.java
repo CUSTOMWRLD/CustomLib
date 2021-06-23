@@ -1,6 +1,8 @@
 package com.customwrld.customlib.hologram.component;
 
 import com.customwrld.customlib.hologram.Hologram;
+import com.customwrld.customlib.util.MC;
+import java.util.Collection;
 import com.customwrld.customlib.util.CC;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
@@ -9,9 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.List;
 
 public class HologramTextComponent extends AbstractHologramComponent {
@@ -36,7 +36,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
             this.armorStand = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
 
             this.armorStand.setCustomNameVisible(this.text.length() >= 1);
-            this.armorStand.setCustomName(CraftChatMessage.fromStringOrNull(CC.translate(null, this.text)));
+            this.armorStand.setCustomName(CraftChatMessage.fromStringOrNull(MC.Style.translatePAPI(null, this.text)));
 
             this.armorStand.setNoGravity(true);
             this.armorStand.setMarker(true);
@@ -98,7 +98,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
             return;
         }
 
-        this.armorStand.setCustomName(new ChatMessage(CC.translate(player, text)));
+        this.armorStand.setCustomName(new ChatMessage(MC.Style.translatePAPI(player, text)));
         NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(this.armorStand.getId(), this.armorStand.getDataWatcher(), true));
     }
 
