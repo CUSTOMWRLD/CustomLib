@@ -3,7 +3,6 @@ package com.customwrld.customlib.util;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -205,8 +204,8 @@ public class ItemFactory {
     public ItemFactory addLoreLines(Collection<Component> lines, int index) {
         var meta = this.itemStack.getItemMeta();
 
-        List<Component> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.addAll(index, lines);
@@ -220,8 +219,8 @@ public class ItemFactory {
     public ItemFactory addLoreLines(int index, Component... lines) {
         var meta = this.itemStack.getItemMeta();
 
-        List<Component> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.addAll(index, Arrays.asList(lines));

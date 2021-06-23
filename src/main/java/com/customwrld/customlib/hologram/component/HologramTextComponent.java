@@ -2,8 +2,6 @@ package com.customwrld.customlib.hologram.component;
 
 import com.customwrld.customlib.hologram.Hologram;
 import com.customwrld.customlib.util.MC;
-import java.util.Collection;
-import com.customwrld.customlib.util.CC;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;
@@ -11,7 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 
 public class HologramTextComponent extends AbstractHologramComponent {
