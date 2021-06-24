@@ -11,9 +11,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -48,19 +46,19 @@ public class MC {
     }
 
     public static class Style {
-        public static Component CONSOLE = Component.text("Console").color(NamedTextColor.DARK_RED);
+        public static TextComponent CONSOLE = Component.text("Console").color(NamedTextColor.DARK_RED);
 
-        public static Component SEPARATOR = Component.text(StringUtils.repeat(" ", 80))
+        public static TextComponent SEPARATOR = Component.text(StringUtils.repeat(" ", 80))
                 .color(NamedTextColor.DARK_GRAY)
                 .decoration(TextDecoration.STRIKETHROUGH, true)
                 .decoration(TextDecoration.ITALIC, false);
 
-        public static Component MENU_SEPARATOR = Component.text(StringUtils.repeat(" ", 40))
+        public static TextComponent MENU_SEPARATOR = Component.text(StringUtils.repeat(" ", 40))
                 .color(NamedTextColor.DARK_GRAY)
                 .decoration(TextDecoration.STRIKETHROUGH, true)
                 .decoration(TextDecoration.ITALIC, false);
 
-        public static Component fromLegacy(String string) {
+        public static TextComponent fromLegacy(String string) {
             return LegacyComponentSerializer.legacy('&').deserialize(string);
         }
 
@@ -90,7 +88,7 @@ public class MC {
                     Integer.valueOf(colorStr.substring(4, 6), 16));
         }
 
-        public static Component gradientComponent(String text, Color from, Color to) {
+        public static TextComponent gradientComponent(String text, Color from, Color to) {
             TextComponent.Builder builder = Component.text();
 
             int steps = text.length();
@@ -119,7 +117,7 @@ public class MC {
     }
 
     public static class Chat {
-        public static Component colorPing(int ping) {
+        public static TextComponent colorPing(int ping) {
             if (ping <= 40) {
                 return Component.text(ping)
                         .color(CC.GREEN.getTextColor());
@@ -135,7 +133,7 @@ public class MC {
             }
         }
 
-        public static Component colorHealth(double health) {
+        public static TextComponent colorHealth(double health) {
             if (health > 15) {
                 return Component.text(convertHealth(health))
                         .color(CC.GREEN.getTextColor());
@@ -171,7 +169,7 @@ public class MC {
             }
         }
 
-        public static Component notificationMessage(String prefix, Component component) {
+        public static TextComponent notificationMessage(String prefix, Component component) {
             return Component.text()
                     .append(
                             Component.text(prefix)
@@ -187,7 +185,7 @@ public class MC {
                     .build();
         }
 
-        public static Component healthToHearts(double health, double maxHealth, double heartScale, boolean displayAmount) {
+        public static TextComponent healthToHearts(double health, double maxHealth, double heartScale, boolean displayAmount) {
             char heart = '❤';
             int allHearts = Math.floorDiv((int) maxHealth, (int) heartScale);
             int fullHearts = Math.floorDiv((int) health, (int) heartScale);
