@@ -5,6 +5,7 @@ import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.flattener.ComponentFlattener;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -48,6 +49,11 @@ public class MC {
     }
 
     public static class Style {
+        private static final LegacyComponentSerializer serializer = LegacyComponentSerializer.builder()
+                .character('&')
+                .useUnusualXRepeatedCharacterHexFormat()
+                .build();
+
         public static Component CONSOLE = Component.text("Console").color(NamedTextColor.DARK_RED);
 
         public static Component SEPARATOR = Component.text(StringUtils.repeat(" ", 80))
@@ -62,6 +68,16 @@ public class MC {
 
         public static Component fromLegacy(String string) {
             return LegacyComponentSerializer.legacy('&').deserialize(string);
+        }
+
+        public static String toLegacy(Component component) {
+            String legacyText = serializer.serializeOrNull(component);
+
+            if(legacyText != null) {
+                return translateLegacy(legacyText);
+            }
+
+            return null;
         }
 
         public static String translateLegacy(String text) {
