@@ -153,31 +153,31 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory addLoreLines(Collection<String> lines) {
+    public ItemFactory addLoreLines(Collection<Component> lines) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.addAll(lore.size(), lines);
 
-        meta.setLore(lore);
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
 
         return this;
     }
 
-    public ItemFactory addLoreLines(String... lines) {
+    public ItemFactory addLoreLines(Component... lines) {
         var meta = this.itemStack.getItemMeta();
 
-        List<String> lore = (meta.hasLore() && meta.getLore() != null) ?
-                new ArrayList<>(meta.getLore()) :
+        List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
+                new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
         lore.addAll(lore.size(), Arrays.asList(lines));
 
-        meta.setLore(lore);
+        meta.lore(lore);
         this.itemStack.setItemMeta(meta);
 
         return this;
