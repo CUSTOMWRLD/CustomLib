@@ -90,7 +90,7 @@ public class CustomLib extends JavaPlugin implements Listener {
         this.pigeon.getPayloadsRegistry()
                 .registerPayloadsInPackage("com.customwrld.customlib.pigeon.payloads");
 
-        this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon, this);
+        this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon);
         this.commonLib.setBukkitLoaded(true);
 
         new BukkitRunnable() {

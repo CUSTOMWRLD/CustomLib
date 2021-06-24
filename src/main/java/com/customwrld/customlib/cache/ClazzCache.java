@@ -9,9 +9,17 @@ import java.lang.reflect.Method;
 
 public enum ClazzCache {
 
+    CRAFT_PLAYER_CLASS(ClazzType.CLASS, "org.bukkit.craftbukkit." + NMSUtil.getBukkitPackage() + ".entity.CraftPlayer", null),
+    GET_HANDLE_PLAYER_METHOD(ClazzType.METHOD, "getHandle", CRAFT_PLAYER_CLASS.getCacheClass()),
+    ENTITY_PLAYER_CLASS(ClazzType.CLASS,  "net.minecraft.server." + NMSUtil.getBukkitPackage() + ".EntityPlayer", null),
+    PLAYER_CONNECTION_FIELD(ClazzType.FIELD, "playerConnection", ENTITY_PLAYER_CLASS.getCacheClass()),
+    PLAYER_CONNECTION_CLASS(ClazzType.CLASS, "net.minecraft.server." + NMSUtil.getBukkitPackage() + ".PlayerConnection", null),
+    NETWORK_MANAGER_CLASS(ClazzType.CLASS, "net.minecraft.server." + NMSUtil.getBukkitPackage() + ".NetworkManager", null),
     ENTITY_HUMAN_CLASS(ClazzType.CLASS, "net.minecraft.server." + NMSUtil.getBukkitPackage() + ".EntityHuman", null),
     PACKET_PLAY_IN_USE_ENTITY_CLASS(ClazzType.CLASS, "net.minecraft.server." + NMSUtil.getBukkitPackage() + ".PacketPlayInUseEntity", null),
     GAME_PROFILE_FIELD(ClazzType.FIELD, "bJ", ENTITY_HUMAN_CLASS.getCacheClass()),
+    CHANNEL_FIELD(ClazzType.FIELD, "channel", NETWORK_MANAGER_CLASS.getCacheClass()),
+    NETWORK_MANAGER_FIELD(ClazzType.FIELD, "networkManager", PLAYER_CONNECTION_CLASS.getCacheClass()),
     ID_FIELD(ClazzType.FIELD, "a", PACKET_PLAY_IN_USE_ENTITY_CLASS.getCacheClass());
 
     @Getter private Constructor<?> cacheConstructor;

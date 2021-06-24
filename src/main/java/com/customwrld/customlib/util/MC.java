@@ -46,6 +46,11 @@ public class MC {
     }
 
     public static class Style {
+        private static final LegacyComponentSerializer serializer = LegacyComponentSerializer.builder()
+                .character('&')
+                .useUnusualXRepeatedCharacterHexFormat()
+                .build();
+
         public static TextComponent CONSOLE = Component.text("Console").color(NamedTextColor.DARK_RED);
 
         public static TextComponent SEPARATOR = Component.text(StringUtils.repeat(" ", 80))
@@ -60,6 +65,16 @@ public class MC {
 
         public static TextComponent fromLegacy(String string) {
             return LegacyComponentSerializer.legacy('&').deserialize(string);
+        }
+
+        public static String toLegacy(Component component) {
+            String legacyText = serializer.serializeOrNull(component);
+
+            if(legacyText != null) {
+                return translateLegacy(legacyText);
+            }
+
+            return null;
         }
 
         public static String translateLegacy(String text) {
