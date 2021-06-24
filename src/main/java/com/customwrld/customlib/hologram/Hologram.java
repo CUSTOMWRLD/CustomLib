@@ -15,10 +15,14 @@ public class Hologram {
     public Location location;
     public List<Player> viewers;
 
-    public Hologram(Location location) {
+    public boolean direction;
+
+    public Hologram(Location location, boolean direction) {
         this.children = new ArrayList<>();
-        this.viewers = new ArrayList<>();
         this.location = location;
+        this.viewers = new ArrayList<>();
+
+        this.direction = direction;
     }
 
     public Hologram append(AbstractHologramComponent component) {
@@ -29,18 +33,34 @@ public class Hologram {
 
     public void render() {
         Location origin = location.clone();
-        for (AbstractHologramComponent component : children) {
-            component.create(origin.clone(), viewers);
-            origin.subtract(0, component.getHeight(), 0);
+        if(direction) {
+            for(AbstractHologramComponent component : children) {
+                component.create(origin.clone(), viewers);
+                origin.subtract(0, component.getHeight(), 0);
+            }
+        } else {
+            for(var i = children.size() - 1; i > 0; i--) {
+                var component = children.get(i);
+                component.create(origin.clone(), viewers);
+                origin.subtract(0, component.getHeight(), 0);
+            }
         }
     }
 
     public void render(Player player) {
         viewers.add(player);
         Location origin = location.clone();
-        for (AbstractHologramComponent component : children) {
-            component.create(origin.clone(), Collections.singletonList(player));
-            origin.subtract(0, component.getHeight(), 0);
+        if(direction) {
+            for(AbstractHologramComponent component : children) {
+                component.create(origin.clone(), Collections.singletonList(player));
+                origin.subtract(0, component.getHeight(), 0);
+            }
+        } else {
+            for(var i = children.size() - 1; i > 0; i--) {
+                var component = children.get(i);
+                component.create(origin.clone(), Collections.singletonList(player));
+                origin.subtract(0, component.getHeight(), 0);
+            }
         }
     }
 
@@ -60,8 +80,8 @@ public class Hologram {
     }
 
     public Hologram clone() {
-        Hologram clone = new Hologram(location);
-        for(AbstractHologramComponent component : children) {
+        Hologram clone = new Hologram(location, this.direction);
+        for(AbstractHologramComponent component : this.children) {
             clone.append(component.clone(clone));
         }
         clone.viewers.addAll(this.viewers);

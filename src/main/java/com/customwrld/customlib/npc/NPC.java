@@ -3,7 +3,6 @@ package com.customwrld.customlib.npc;
 import com.customwrld.customlib.CustomLib;
 import com.customwrld.customlib.cache.ClazzCache;
 import com.customwrld.customlib.hologram.Hologram;
-import com.customwrld.customlib.hologram.component.AbstractHologramComponent;
 import com.customwrld.customlib.util.MC;
 import com.customwrld.customlib.util.NMSUtil;
 import com.mojang.authlib.GameProfile;
@@ -36,6 +35,7 @@ public class NPC {
         this.viewers = new HashSet<>();
 
         if(hologram != null) {
+            hologram.direction = false;
             this.hologram = hologram;
         }
 
@@ -57,9 +57,10 @@ public class NPC {
         entityNPC.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
         if (hologram != null) {
-            for(AbstractHologramComponent component : hologram.getChildren()) {
-                component.setLocation(location);
-            }
+            hologram.setLocation(location.clone().add(0, 2.1, 0));
+//            for(AbstractHologramComponent component : hologram.getChildren()) {
+//                component.setLocation(location);
+//            }
         }
 
         updateLoc();
@@ -90,8 +91,10 @@ public class NPC {
         this.viewers.add(player);
 
         if(hologram != null) {
-            CustomLib.getCustomLib().getHolograms().add(this.hologram);
-            hologram.render(player);
+            var holograms = CustomLib.getCustomLib().getHolograms();
+            if(!holograms.contains(this.hologram)) { holograms.add(this.hologram); }
+
+            if(!hologram.viewers.contains(player)) { hologram.render(player); }
         }
 
         setLocation(this.location);

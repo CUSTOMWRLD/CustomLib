@@ -85,6 +85,9 @@ public class HologramTextComponent extends AbstractHologramComponent {
 
     public void setText(String text) {
         this.text = text;
+
+        if(this.armorStand == null) { return; }
+
         this.getParent().viewers.forEach(player -> setText(text, player));
     }
 
@@ -93,6 +96,8 @@ public class HologramTextComponent extends AbstractHologramComponent {
      * @param player Player to set the text for, if null it calls {@link HologramTextComponent#setText(String)}
      */
     public void setText(String text, @Nullable Player player) {
+        if(this.armorStand == null) { return; }
+
         if(player == null) {
             setText(text);
             return;
@@ -107,6 +112,8 @@ public class HologramTextComponent extends AbstractHologramComponent {
      * @param players Players to set the text for, if null it calls {@link HologramTextComponent#setText(String)}
      */
     public void setText(String text, @Nullable Collection<Player> players) {
+        if(this.armorStand == null) { return; }
+
         if(players == null) {
             setText(text);
             return;
