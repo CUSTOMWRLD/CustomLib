@@ -24,10 +24,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CustomLib extends JavaPlugin implements Listener {
 
@@ -70,8 +68,8 @@ public class CustomLib extends JavaPlugin implements Listener {
         this.loadPigeon();
         this.loadMongo();
 
-        this.npcs = new ArrayList<>();
-        this.holograms = new ArrayList<>();
+        this.npcs = new CopyOnWriteArrayList<>();
+        this.holograms = new CopyOnWriteArrayList<>();
         this.serverUsers = new ArrayList<>();
 
         new NPCTask(this).run();
