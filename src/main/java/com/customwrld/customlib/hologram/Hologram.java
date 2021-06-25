@@ -39,10 +39,10 @@ public class Hologram {
                 origin.subtract(0, component.getHeight(), 0);
             }
         } else {
-            for(var i = children.size() - 1; i > 0; i--) {
+            for(var i = children.size() - 1; i >= 0; i--) {
                 var component = children.get(i);
                 component.create(origin.clone(), viewers);
-                origin.subtract(0, component.getHeight(), 0);
+                origin.add(0, component.getHeight(), 0);
             }
         }
     }
@@ -56,10 +56,10 @@ public class Hologram {
                 origin.subtract(0, component.getHeight(), 0);
             }
         } else {
-            for(var i = children.size() - 1; i > 0; i--) {
+            for(var i = children.size() - 1; i >= 0; i--) {
                 var component = children.get(i);
                 component.create(origin.clone(), Collections.singletonList(player));
-                origin.subtract(0, component.getHeight(), 0);
+                origin.add(0, component.getHeight(), 0);
             }
         }
     }
