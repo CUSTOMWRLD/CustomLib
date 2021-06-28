@@ -36,7 +36,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
             this.armorStand = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY() - 0.4, location.getZ());
 
             this.armorStand.setCustomNameVisible(this.text.length() >= 1);
-            this.armorStand.setCustomName(CraftChatMessage.fromStringOrNull(MC.Style.translatePAPI(null, this.text)));
+            this.armorStand.setCustomName(CraftChatMessage.fromStringOrNull(MC.Style.translateLegacy(this.text)));
 
             this.armorStand.setNoGravity(true);
             this.armorStand.setMarker(true);
@@ -103,7 +103,7 @@ public class HologramTextComponent extends AbstractHologramComponent {
             return;
         }
 
-        this.armorStand.setCustomName(new ChatMessage(MC.Style.translatePAPI(player, text)));
+        this.armorStand.setCustomName(new ChatMessage(MC.Style.translateLegacy(text)));
         NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(this.armorStand.getId(), this.armorStand.getDataWatcher(), true));
     }
 

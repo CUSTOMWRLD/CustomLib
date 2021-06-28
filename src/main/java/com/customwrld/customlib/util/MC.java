@@ -2,7 +2,6 @@ package com.customwrld.customlib.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,6 +19,8 @@ public class MC {
     @Getter
     @AllArgsConstructor
     public enum CC {
+        BRAND("brand", new Color(0x58BAFF)),
+        BRAND_LIGHT("brand_light", new Color(0x99D6FF)),
         BLACK("black", new Color(0x000000)),
         DARK_BLUE("dark_blue", new Color(0x0000AA)),
         DARK_GREEN("dark_green", new Color(0x00AA00)),
@@ -58,7 +59,7 @@ public class MC {
                 .decoration(TextDecoration.STRIKETHROUGH, true)
                 .decoration(TextDecoration.ITALIC, false);
 
-        public static TextComponent MENU_SEPARATOR = Component.text(StringUtils.repeat(" ", 40))
+        public static TextComponent MENU_SEPARATOR = Component.text(StringUtils.repeat(" ", 50))
                 .color(NamedTextColor.DARK_GRAY)
                 .decoration(TextDecoration.STRIKETHROUGH, true)
                 .decoration(TextDecoration.ITALIC, false);
@@ -90,10 +91,6 @@ public class MC {
             }
 
             return new String(array);
-        }
-
-        public static String translatePAPI(Player player, String text) {
-            return translateLegacy(PlaceholderAPI.setPlaceholders(player, text));
         }
 
         public static Color hexToColor(String colorStr) {
@@ -188,7 +185,7 @@ public class MC {
             return Component.text()
                     .append(
                             Component.text(prefix)
-                                    .color(NamedTextColor.DARK_AQUA)
+                                    .color(CC.BRAND.getTextColor())
                                     .decoration(TextDecoration.BOLD, true)
                     )
                     .append(
