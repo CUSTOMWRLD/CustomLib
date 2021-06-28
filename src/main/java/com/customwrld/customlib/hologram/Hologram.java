@@ -8,19 +8,20 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Hologram {
 
-    @Getter private final List<AbstractHologramComponent> children;
+    @Getter private final CopyOnWriteArrayList<AbstractHologramComponent> children;
     public Location location;
-    public List<Player> viewers;
+    public CopyOnWriteArrayList<Player> viewers;
 
     public boolean direction;
 
     public Hologram(Location location, boolean direction) {
-        this.children = new ArrayList<>();
+        this.children = new CopyOnWriteArrayList<>();
         this.location = location;
-        this.viewers = new ArrayList<>();
+        this.viewers = new CopyOnWriteArrayList<>();
 
         this.direction = direction;
     }
@@ -73,9 +74,22 @@ public class Hologram {
 
     public void setLocation(Location location) {
         Location origin = location.clone();
-        for (AbstractHologramComponent component : children) {
-            component.setLocation(origin.clone());
-            origin.subtract(0, component.getHeight(), 0);
+//        for (AbstractHologramComponent component : children) {
+//            component.setLocation(origin.clone());
+//            origin.subtract(0, component.getHeight(), 0);
+//        }
+
+        if(direction) {
+            for(AbstractHologramComponent component : children) {
+                component.setLocation(origin.clone());
+                origin.subtract(0, component.getHeight(), 0);
+            }
+        } else {
+            for(var i = children.size() - 1; i >= 0; i--) {
+                var component = children.get(i);
+                component.setLocation(origin.clone());
+                origin.add(0, component.getHeight(), 0);
+            }
         }
     }
 

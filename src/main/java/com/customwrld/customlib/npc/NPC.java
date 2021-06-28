@@ -1,5 +1,6 @@
 package com.customwrld.customlib.npc;
 
+import com.customwrld.commonlib.util.Util;
 import com.customwrld.customlib.CustomLib;
 import com.customwrld.customlib.cache.ClazzCache;
 import com.customwrld.customlib.hologram.Hologram;
@@ -8,7 +9,6 @@ import com.customwrld.customlib.util.NMSUtil;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_16_R3.*;
-import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
@@ -36,21 +36,18 @@ public class NPC {
 
         if(hologram != null) {
             hologram.direction = false;
+            hologram.setLocation(location.clone().add(0, 2.1, 0));
             this.hologram = hologram;
         }
 
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
 
-        gameProfile = new GameProfile(UUID.randomUUID(), MC.Style.translateLegacy("&8[NPC] " + generateRandom()));
+        gameProfile = new GameProfile(UUID.randomUUID(), MC.Style.translateLegacy("&8[NPC] " + Util.generateId()));
         gameProfile.getProperties().put("textures", new Property("textures", skin, signature));
         entityNPC = new EntityPlayer(nmsServer, nmsWorld, gameProfile, new PlayerInteractManager(nmsWorld));
 
         entityId = entityNPC.getId();
-    }
-
-    private String generateRandom() {
-        return RandomStringUtils.randomAlphanumeric(8);
     }
 
     public void setLocation(Location location) {
@@ -58,9 +55,6 @@ public class NPC {
 
         if (hologram != null) {
             hologram.setLocation(location.clone().add(0, 2.1, 0));
-//            for(AbstractHologramComponent component : hologram.getChildren()) {
-//                component.setLocation(location);
-//            }
         }
 
         updateLoc();
@@ -87,8 +81,10 @@ public class NPC {
         }
     }
 
-    public void spawn(Player player) throws Exception {
+    public void spawn(Player player) {
         this.viewers.add(player);
+
+        setLocation(this.location);
 
         if(hologram != null) {
             var holograms = CustomLib.getCustomLib().getHolograms();
@@ -96,8 +92,6 @@ public class NPC {
 
             if(!hologram.viewers.contains(player)) { hologram.render(player); }
         }
-
-        setLocation(this.location);
 
         NMSUtil.sendPacket(player, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityNPC));
         NMSUtil.sendPacket(player, new PacketPlayOutNamedEntitySpawn(entityNPC));
@@ -107,14 +101,17 @@ public class NPC {
 
         NMSUtil.sendPacket(player, new PacketPlayOutEntityMetadata(entityId, watcher, true));
 
-        PacketPlayOutScoreboardTeam packetPlayOutScoreboardTeam = new PacketPlayOutScoreboardTeam();
-        NMSUtil.setValue(packetPlayOutScoreboardTeam, "a", generateRandom());
-        NMSUtil.setValue(packetPlayOutScoreboardTeam, "e", "never");
-        NMSUtil.setValue(packetPlayOutScoreboardTeam, "h", Collections.singletonList(gameProfile.getName()));
-        NMSUtil.setValue(packetPlayOutScoreboardTeam, "i", 0);
-        NMSUtil.setValue(packetPlayOutScoreboardTeam, "j", 0);
 
-        NMSUtil.sendPacket(player, packetPlayOutScoreboardTeam);
+        PacketPlayOutScoreboardTeam scoreboardTeam = CustomLib.getCustomLib().getScoreboardTeam();
+
+        try {
+            NMSUtil.setValue(scoreboardTeam, "i", 3);
+            NMSUtil.setValue(scoreboardTeam, "h", Collections.singletonList(this.gameProfile.getName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        NMSUtil.sendPacket(player, scoreboardTeam);
 
         lookAt(player);
 

@@ -1,3 +1,7 @@
+SERVER:
+  NAME: "Lobby-1"
+  TYPE: "LOBBY"
+
 MONGO:
   HOST: 127.0.0.1
   PORT: 27017
