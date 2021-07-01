@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.customwrld.customlib.assemble.events.AssembleBoardCreatedEvent;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -42,11 +43,16 @@ public class AssembleBoard {
 	 */
 	public Scoreboard getScoreboard() {
 		Player player = Bukkit.getPlayer(getUuid());
-		if (getAssemble().isHook() || player.getScoreboard() != Bukkit.getScoreboardManager().getMainScoreboard()) {
-			return player.getScoreboard();
-		} else {
-			return Bukkit.getScoreboardManager().getNewScoreboard();
+
+		if(player != null) {
+			if (getAssemble().isHook() || player.getScoreboard() != Bukkit.getScoreboardManager().getMainScoreboard()) {
+				return player.getScoreboard();
+			} else {
+				return Bukkit.getScoreboardManager().getNewScoreboard();
+			}
 		}
+
+		return null;
 	}
 
 	/**
@@ -57,9 +63,9 @@ public class AssembleBoard {
 	public Objective getObjective() {
 		Scoreboard scoreboard = getScoreboard();
 		if (scoreboard.getObjective("Assemble") == null) {
-			Objective objective = scoreboard.registerNewObjective("Assemble", "dummy");
+			Objective objective = scoreboard.registerNewObjective("Assemble", "dummy", Component.text("Assemble"));
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-			objective.setDisplayName(getAssemble().getAdapter().getTitle(Bukkit.getPlayer(getUuid())));
+			objective.displayName(getAssemble().getAdapter().getTitle(Bukkit.getPlayer(getUuid())));
 			return objective;
 		} else {
 			return scoreboard.getObjective("Assemble");

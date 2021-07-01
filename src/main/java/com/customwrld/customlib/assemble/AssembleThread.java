@@ -1,5 +1,6 @@
 package com.customwrld.customlib.assemble;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
@@ -56,14 +57,14 @@ public class AssembleThread extends Thread {
 
                 // Just make a variable so we don't have to
                 // process the same thing twice.
-                String title = ChatColor.translateAlternateColorCodes('&', this.assemble.getAdapter().getTitle(player));
+                Component title = this.assemble.getAdapter().getTitle(player);
 
                 // Update the title if needed.
-                if (!objective.getDisplayName().equals(title)) {
-                    objective.setDisplayName(title);
+                if (!objective.displayName().equals(title)) {
+                    objective.displayName(title);
                 }
 
-                List<String> newLines = this.assemble.getAdapter().getLines(player);
+                List<Component> newLines = this.assemble.getAdapter().getLines(player);
 
                 // Allow adapter to return null/empty list to display nothing.
                 if (newLines == null || newLines.isEmpty()) {
@@ -96,7 +97,7 @@ public class AssembleThread extends Thread {
                         AssembleBoardEntry entry = board.getEntryAtPosition(i);
 
                         // Translate any colors.
-                        String line = ChatColor.translateAlternateColorCodes('&', newLines.get(i));
+                        Component line = newLines.get(i);
 
                         // If the entry is null, just create a new one.
                         // Creating a new AssembleBoardEntry instance will add
@@ -106,7 +107,7 @@ public class AssembleThread extends Thread {
                         }
 
                         // Update text, setup the team, and update the display values.
-                        entry.setText(line);
+                        entry.setComponent(line);
                         entry.setup();
                         entry.send(
                                 this.assemble.getAssembleStyle().isDescending() ? cache-- : cache++
@@ -117,10 +118,7 @@ public class AssembleThread extends Thread {
                 if (player.getScoreboard() != scoreboard && !assemble.isHook()) {
                     player.setScoreboard(scoreboard);
                 }
-            } catch(Exception e) {
-                e.printStackTrace();
-                throw new AssembleException("There was an error updating " + player.getName() + "'s scoreboard.");
-            }
+            } catch(Exception ignored) {}
         }
     }
 

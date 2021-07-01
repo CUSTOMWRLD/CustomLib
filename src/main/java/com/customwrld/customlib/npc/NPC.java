@@ -43,7 +43,7 @@ public class NPC {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
 
-        gameProfile = new GameProfile(UUID.randomUUID(), MC.Style.translateLegacy("&8[NPC] " + Util.generateId()));
+        gameProfile = new GameProfile(UUID.randomUUID(), Util.generateId());
         gameProfile.getProperties().put("textures", new Property("textures", skin, signature));
         entityNPC = new EntityPlayer(nmsServer, nmsWorld, gameProfile, new PlayerInteractManager(nmsWorld));
 
