@@ -11,6 +11,7 @@ import com.customwrld.customlib.misc.GlowEnchantment;
 import com.customwrld.customlib.npc.NPC;
 import com.customwrld.customlib.npc.NPCTask;
 import com.customwrld.customlib.smartinvs.InventoryManager;
+import com.customwrld.customlib.util.MC;
 import com.customwrld.customlib.util.NMSUtil;
 import com.customwrld.pigeon.Pigeon;
 import com.google.gson.Gson;
@@ -18,6 +19,9 @@ import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.minecraft.server.v1_16_R3.ChatComponentText;
+import net.minecraft.server.v1_16_R3.EnumChatFormat;
 import net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardTeam;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -104,7 +108,9 @@ public class CustomLib extends JavaPlugin implements Listener {
 
         try {
             NMSUtil.setValue(scoreboardTeam, "a", "NPC-TEAM");
+            NMSUtil.setValue(scoreboardTeam, "c", new ChatComponentText(MC.Style.toLegacy(Component.text("[NPC] ", MC.CC.DARK_GRAY.getTextColor()))));
             NMSUtil.setValue(scoreboardTeam, "e", "never");
+            NMSUtil.setValue(scoreboardTeam, "g", EnumChatFormat.DARK_GRAY);
         } catch (Exception e) {
             e.printStackTrace();
         }

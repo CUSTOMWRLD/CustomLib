@@ -1,6 +1,8 @@
 package com.customwrld.customlib.assemble;
 
+import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Score;
@@ -12,7 +14,8 @@ import java.util.Set;
 public class AssembleBoardEntry {
 
 	private final AssembleBoard board;
-	@Setter private String text, identifier;
+	@Setter private Component component;
+	@Getter private String identifier;
 	private Team team;
 	private int position;
 
@@ -20,12 +23,12 @@ public class AssembleBoardEntry {
 	 * Assemble Board Entry
 	 *
 	 * @param board that entry belongs to.
-	 * @param text of entry.
+	 * @param component of entry.
 	 * @param position of entry.
 	 */
-	public AssembleBoardEntry(AssembleBoard board, String text, int position) {
+	public AssembleBoardEntry(AssembleBoard board, Component component, int position) {
 		this.board = board;
-		this.text = text;
+		this.component = component;
 		this.position = position;
 		this.identifier = this.board.getUniqueIdentifier(position);
 
@@ -57,7 +60,7 @@ public class AssembleBoardEntry {
 		}
 
 		// Add the entry to the team.
-		if (team.getEntries() == null || team.getEntries().isEmpty() || !team.getEntries().contains(this.identifier)) {
+		if (team.getEntries().isEmpty() || !team.getEntries().contains(this.identifier)) {
 			team.addEntry(this.identifier);
 		}
 
@@ -75,34 +78,7 @@ public class AssembleBoardEntry {
 	 * @param position of entry.
 	 */
 	public void send(int position) {
-		if (this.text.length() > 16) {
-			String prefix = this.text.substring(0, 16);
-			String suffix;
-
-			if (prefix.charAt(15) == ChatColor.COLOR_CHAR) {
-				prefix = prefix.substring(0, 15);
-				suffix = this.text.substring(15, this.text.length());
-			} else if (prefix.charAt(14) == ChatColor.COLOR_CHAR) {
-				prefix = prefix.substring(0, 14);
-				suffix = this.text.substring(14, this.text.length());
-			} else {
-				if (ChatColor.getLastColors(prefix).equalsIgnoreCase(ChatColor.getLastColors(this.identifier))) {
-					suffix = this.text.substring(16, this.text.length());
-				} else {
-					suffix = ChatColor.getLastColors(prefix) + this.text.substring(16, this.text.length());
-				}
-			}
-
-			if (suffix.length() > 16) {
-				suffix = suffix.substring(0, 16);
-			}
-
-			this.team.setPrefix(prefix);
-			this.team.setSuffix(suffix);
-		} else {
-			this.team.setPrefix(this.text);
-			this.team.setSuffix("");
-		}
+		this.team.prefix(this.component);
 
 		Score score = this.board.getObjective().getScore(this.identifier);
 		score.setScore(position);

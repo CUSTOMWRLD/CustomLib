@@ -59,6 +59,11 @@ public class MC {
                 .decoration(TextDecoration.STRIKETHROUGH, true)
                 .decoration(TextDecoration.ITALIC, false);
 
+        public static TextComponent SCOREBOARD_SEPARATOR = Component.text(StringUtils.repeat(" ", 32))
+                .color(NamedTextColor.DARK_GRAY)
+                .decoration(TextDecoration.STRIKETHROUGH, true)
+                .decoration(TextDecoration.ITALIC, false);
+
         public static TextComponent MENU_SEPARATOR = Component.text(StringUtils.repeat(" ", 50))
                 .color(NamedTextColor.DARK_GRAY)
                 .decoration(TextDecoration.STRIKETHROUGH, true)

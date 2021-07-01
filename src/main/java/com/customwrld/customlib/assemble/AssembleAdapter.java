@@ -1,6 +1,8 @@
 package com.customwrld.customlib.assemble;
 
 import java.util.List;
+
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public interface AssembleAdapter {
@@ -11,7 +13,7 @@ public interface AssembleAdapter {
 	 * @param player who's title is being displayed.
 	 * @return title.
 	 */
-	String getTitle(Player player);
+	Component getTitle(Player player);
 
 	/**
 	 * Get's the scoreboard lines.
@@ -19,6 +21,6 @@ public interface AssembleAdapter {
 	 * @param player who's lines are being displayed.
 	 * @return lines.
 	 */
-	List<String> getLines(Player player);
+	List<Component> getLines(Player player);
 
 }
