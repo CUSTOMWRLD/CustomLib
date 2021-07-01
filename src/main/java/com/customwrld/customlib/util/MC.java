@@ -10,7 +10,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.entity.Player;
 
 import java.awt.*;
 
@@ -216,67 +215,64 @@ public class MC {
         }
 
         // TODO: Convert to proper Components
-//        public static TextComponent levelProgressMessage(int lvl, int nextLvl, long exp, long nextLevelExp, Color currentColor, Color nextColor, boolean displayTitle, boolean displayLevels, boolean displayUnder) {
-//            net.md_5.bungee.api.chat.TextComponent message = new net.md_5.bungee.api.chat.TextComponent();
-//
-//            float progress = Math.min(exp / (float) nextLevelExp, 1);
-//
-//            Color endColor = CC.getColorBetween(currentColor, nextColor, progress);
-//
-//            net.md_5.bungee.api.chat.TextComponent component;
-//            if(displayTitle) {
-//                component = new net.md_5.bungee.api.chat.TextComponent("Level Progress\n");
-//                component.setBold(true);
-//                component.setColor(ChatColor.GOLD);
-//                message.addExtra(AlignUtil.centerAlignMessage(component));
-//            }
-//
-//            ComponentBuilder builder = new ComponentBuilder("█");
-//
-//            int amountOfSteps = 41;
-//            int progressSteps = Math.min((int) Math.floor(amountOfSteps * progress) + 1, amountOfSteps); //TODO 0 is one line when should be none
-//            int stepsLeft = amountOfSteps - progressSteps;
-//
-//            net.md_5.bungee.api.chat.TextComponent progressBar = CC.gradientComponent(
-//                    ChatUtil.builderToComponent(
-//                            builder.append(org.apache.commons.lang.StringUtils.repeat(" ", progressSteps)).strikethrough(true)), currentColor, endColor);
-//
-//            component = new net.md_5.bungee.api.chat.TextComponent(org.apache.commons.lang.StringUtils.repeat(" ", stepsLeft));
-//            component.setStrikethrough(true);
-//            component.setColor(ChatColor.DARK_GRAY);
-//            progressBar.addExtra(component);
-//
-//            component = new net.md_5.bungee.api.chat.TextComponent("█");
-//            component.setColor(progress < 1 ? ChatColor.of(new Color(64, 64, 64)) : ChatColor.of(endColor));
-//            progressBar.addExtra(component);
-//
-//            if(displayLevels) {
-//                component = ChatUtil.builderToComponent(
-//                        new ComponentBuilder(lvl + " ")
-//                                .append(progressBar)
-//                                .append(" " + nextLvl + "\n").reset());
-//            } else {
-//                component = progressBar;
-//            }
-//
-//            message.addExtra(AlignUtil.centerAlignMessage(component));
-//
-//            if(displayUnder) {
-//                message.addExtra(AlignUtil.centerAlignMessage(
-//                        progress < 1 ?
-//                                new net.md_5.bungee.api.chat.TextComponent("(" + exp + "/" + nextLevelExp + ")\n") :
-//                                ChatUtil.builderToComponent(new ComponentBuilder("Leveled Up!\n").bold(true).color(ChatColor.YELLOW))
-//                ));
-//            }
-//
-//            return message;
-//        }
+        public static TextComponent levelProgressMessage(int lvl, int nextLvl, long exp, long nextLevelExp, Color currentColor, Color nextColor, boolean displayTitle, boolean displayLevels, boolean displayUnder) {
+            var builder = Component.text();
+
+            float progress = Math.min(exp / (float) nextLevelExp, 1);
+
+            Color endColor = Style.getColorBetween(currentColor, nextColor, progress);
+
+            if(displayTitle) {
+                builder.append(Alignment.centerAlignMessage(
+                        Component.text("Level Progress\n",
+                                CC.GOLD.getTextColor(), TextDecoration.BOLD)
+                        )
+                );
+            }
+
+            Component component = Component.text("█");
+
+            int amountOfSteps = 41;
+            int progressSteps = Math.min((int) Math.floor(amountOfSteps * progress) + 1, amountOfSteps); //TODO 0 is one line when should be none
+            int stepsLeft = amountOfSteps - progressSteps;
+
+            Component progressBar = Style.gradientComponent(StringUtils.repeat(" ", progressSteps), currentColor, endColor)
+                    .decorate(TextDecoration.STRIKETHROUGH);
+
+            component = component.append(Component.text(StringUtils.repeat(" ", stepsLeft),
+                            CC.DARK_GRAY.getTextColor(), TextDecoration.STRIKETHROUGH));
+            builder.append(component);
+
+            component = Component.text("█",
+                    TextColor.color((progress < 1 ? new Color(64, 64, 64) : endColor).getRGB()));
+            progressBar = progressBar.append(component);
+
+            if(displayLevels) {
+                component = Component.text(lvl + " ")
+                                .append(progressBar)
+                                .append(Component.text(" " + nextLvl + "\n"));
+            } else {
+                component = progressBar;
+            }
+
+            builder.append(Alignment.centerAlignMessage(component));
+
+            if(displayUnder) {
+                builder.append(Alignment.centerAlignMessage(
+                        progress < 1 ?
+                                Component.text("(" + exp + "/" + nextLevelExp + ")\n") :
+                                Component.text("Leveled Up!\n", CC.YELLOW.getTextColor(), TextDecoration.BOLD))
+                );
+            }
+
+            return builder.build();
+        }
     }
 
     public static class Alignment {
         // TODO: Convert to proper Components
-//    @Getter private static final int chatPixels = 320;
-//    @Getter private static final int centerPixels = chatPixels / 2;
+        @Getter private static final int chatPixels = 320;
+        @Getter private static final int centerPixels = chatPixels / 2;
 //
 //    public static List<BaseComponent> equalizeLengthsReversed(List<List<BaseComponent>> lines) {
 //        int amountOfGroups = lines.get(0).size();
@@ -338,15 +334,13 @@ public class MC {
 //    }
 //
 //
-//    public static TextComponent centerAlignMessage(BaseComponent message) {
-//        int messagePxSize = getComponentPixels(message);
-//
-//        TextComponent spacePadding = getSpacePadding(centerPixels - (messagePxSize / 2));
-//
-//        TextComponent centeredComponent = new TextComponent(spacePadding);
-//        centeredComponent.addExtra(message);
-//        return centeredComponent;
-//    }
+    public static TextComponent centerAlignMessage(Component message) {
+        int messagePxSize = getComponentPixels(message);
+
+        TextComponent spacePadding = getSpacePadding(centerPixels - (messagePxSize / 2));
+
+        return spacePadding.append(message);
+    }
 //
 //    public static List<BaseComponent> centerAlongFirst(List<BaseComponent> lines) {
 //        int start = centerPixels - (getComponentPixels(lines.get(0)) / 2);
@@ -443,46 +437,44 @@ public class MC {
 //        return alignedLines;
 //    }
 //
-//    public static int getComponentPixels(BaseComponent message) {
-//        if(message == null) {
-//            return 0;
-//        }
-//
-//        int messagePxSize = 0;
-//        if(message instanceof TextComponent) {
-//            TextComponent textMessage = (TextComponent) message;
-//            if (textMessage.getText() != null) {
-//                String plainText = textMessage.getText();
-//
-//                boolean isBold = textMessage.isBold();
-//
-//                //System.out.println(plainText.toCharArray());
-//                for (char c : plainText.toCharArray()) {
-//                    DefaultFontInfo dFI = DefaultFontInfo.getDefaultFontInfo(c);
-//                    messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
-//                    messagePxSize++; //Include one pixel for background
-//                }
-//            }
-//        }
-//
-//        if(message.getExtra() != null) {
-//            for(BaseComponent extra : message.getExtra()) {
-//                messagePxSize += getComponentPixels(extra);
-//            }
-//        }
-//
-//        return messagePxSize;
-//    }
-//
-//    public static TextComponent getSpacePadding(int compensate) {
-//        int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
-//        int boldSpaces = compensate % spaceLength;
-//        int spaces = (compensate / spaceLength) - boldSpaces;
-//
-//        return ChatUtil.builderToComponent(
-//                new ComponentBuilder(StringUtils.repeat(" ", spaces))
-//                        .append(StringUtils.repeat(" ", boldSpaces)).bold(true));
-//    }
+        public static int getComponentPixels(Component message) {
+            if(message == null) {
+                return 0;
+            }
+
+            int messagePxSize = 0;
+            if(message instanceof TextComponent) {
+                TextComponent textMessage = (TextComponent) message;
+                if (textMessage.content() != null) {
+                    String plainText = textMessage.content();
+
+                    boolean isBold = textMessage.hasDecoration(TextDecoration.BOLD);
+
+                    for (char c : plainText.toCharArray()) {
+                        var dFI = DefaultFontInfo.getDefaultFontInfo(c);
+                        messagePxSize += isBold ? dFI.getBoldLength() : dFI.getLength();
+                        messagePxSize++; //Include one pixel for background
+                    }
+                }
+            }
+
+            if(!message.children().isEmpty()) {
+                for(Component extra : message.children()) {
+                    messagePxSize += getComponentPixels(extra);
+                }
+            }
+
+            return messagePxSize;
+        }
+
+        public static TextComponent getSpacePadding(int compensate) {
+            int spaceLength = DefaultFontInfo.SPACE.getLength() + 1;
+            int boldSpaces = compensate % spaceLength;
+            int spaces = (compensate / spaceLength) - boldSpaces;
+
+            return Component.text(StringUtils.repeat(" ", spaces))
+                            .append(Component.text(StringUtils.repeat(" ", boldSpaces)));
+        }
     }
 
 }
