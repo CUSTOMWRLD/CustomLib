@@ -11,7 +11,7 @@ import com.customwrld.customlib.misc.GlowEnchantment;
 import com.customwrld.customlib.npc.NPC;
 import com.customwrld.customlib.npc.NPCTask;
 import com.customwrld.customlib.smartinvs.InventoryManager;
-import com.customwrld.customlib.util.MC;
+import com.customwrld.commonlib.util.MC;
 import com.customwrld.customlib.util.NMSUtil;
 import com.customwrld.pigeon.Pigeon;
 import com.google.gson.Gson;
@@ -95,7 +95,6 @@ public class CustomLib extends JavaPlugin implements Listener {
         this.pigeon.setupDefaultUpdater();
 
         this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon);
-        this.commonLib.setBukkitLoaded(true);
 
         new BukkitRunnable() {
             @Override
