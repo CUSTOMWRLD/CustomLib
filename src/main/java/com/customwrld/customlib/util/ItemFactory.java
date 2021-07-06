@@ -3,6 +3,7 @@ package com.customwrld.customlib.util;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -40,7 +41,7 @@ public class ItemFactory {
 
     public ItemFactory setName(Component name) {
         var meta = this.itemStack.getItemMeta();
-        meta.displayName(name);
+        meta.displayName(fixItalics(name));
         this.itemStack.setItemMeta(meta);
         return this;
     }
@@ -127,14 +128,14 @@ public class ItemFactory {
 
     public ItemFactory setLore(List<Component> lore) {
         var meta = this.itemStack.getItemMeta();
-        meta.lore(lore);
+        meta.lore(fixItalics(lore));
         this.itemStack.setItemMeta(meta);
         return this;
     }
 
     public ItemFactory setLore(Component... lore) {
         var meta = this.itemStack.getItemMeta();
-        meta.lore(Arrays.asList(lore));
+        meta.lore(Arrays.asList(fixItalics(lore)));
         this.itemStack.setItemMeta(meta);
         return this;
     }
@@ -146,7 +147,7 @@ public class ItemFactory {
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        lore.set(index, line);
+        lore.set(index, fixItalics(line));
         meta.lore(lore);
 
         this.itemStack.setItemMeta(meta);
@@ -160,7 +161,7 @@ public class ItemFactory {
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        lore.addAll(lore.size(), lines);
+        lore.addAll(lore.size(), fixItalics(lines));
 
         meta.lore(lore);
         this.itemStack.setItemMeta(meta);
@@ -175,7 +176,7 @@ public class ItemFactory {
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        lore.addAll(lore.size(), Arrays.asList(lines));
+        lore.addAll(lore.size(), Arrays.asList(fixItalics(lines)));
 
         meta.lore(lore);
         this.itemStack.setItemMeta(meta);
@@ -183,14 +184,14 @@ public class ItemFactory {
         return this;
     }
 
-    public ItemFactory addLoreLines(SortedMap<Integer, Component> lines) {
+    public ItemFactory addLoreLines(Map<Integer, Component> lines) {
         var meta = this.itemStack.getItemMeta();
 
         List<Component> lore = (meta.hasLore() && meta.lore() != null) ?
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        TreeMap<Integer, Component> sortedLines = new TreeMap<>(lines);
+        TreeMap<Integer, Component> sortedLines = new TreeMap<>(fixItalics(lines));
         for(int index : sortedLines.descendingKeySet()){
             lore.add(index, sortedLines.get(index));
         }
@@ -208,7 +209,7 @@ public class ItemFactory {
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        lore.addAll(index, lines);
+        lore.addAll(index, fixItalics(lines));
 
         meta.lore(lore);
         this.itemStack.setItemMeta(meta);
@@ -223,7 +224,7 @@ public class ItemFactory {
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        lore.addAll(index, Arrays.asList(lines));
+        lore.addAll(index, Arrays.asList(fixItalics(lines)));
 
         meta.lore(lore);
         this.itemStack.setItemMeta(meta);
@@ -248,7 +249,7 @@ public class ItemFactory {
                 new ArrayList<>(meta.lore()) :
                 new ArrayList<>();
 
-        lore.add(index, line);
+        lore.add(index, fixItalics(line));
 
         meta.lore(lore);
         this.itemStack.setItemMeta(meta);
@@ -993,6 +994,37 @@ public class ItemFactory {
         ((BlockDataMeta) meta).setBlockData(data);
         this.itemStack.setItemMeta(meta);
         return this;
+    }
+
+    private static Map<Integer, Component> fixItalics(Map<Integer, Component> components) {
+        Map<Integer, Component> newComponents = new HashMap<>();
+        for(Map.Entry<Integer, Component> ent : components.entrySet()) {
+            newComponents.put(ent.getKey(), fixItalics(ent.getValue()));
+        }
+        return components;
+    }
+
+    private static List<Component> fixItalics(Collection<Component> components) {
+        List<Component> newComponents = new ArrayList<>();
+        for(Component component : components) {
+            newComponents.add(fixItalics(component));
+        }
+        return newComponents;
+    }
+
+    private static Component[] fixItalics(Component... components) {
+        var newComponents = new Component[components.length];
+        for(int i = 0; i < components.length; i++) {
+            newComponents[i] = fixItalics(components[i]);
+        }
+        return newComponents;
+    }
+
+    private static Component fixItalics(Component component) {
+        if(component.decoration(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET) {
+            component = component.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
+        }
+        return component;
     }
 
     public ItemFactory clone() {
