@@ -1,7 +1,7 @@
 package com.customwrld.customlib.hologram.component;
 
-import com.customwrld.customlib.hologram.Hologram;
 import com.customwrld.commonlib.util.MC;
+import com.customwrld.customlib.hologram.Hologram;
 import com.customwrld.customlib.util.NMSUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_16_R3.*;

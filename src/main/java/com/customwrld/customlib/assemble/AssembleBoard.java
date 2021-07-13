@@ -1,10 +1,5 @@
 package com.customwrld.customlib.assemble;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.customwrld.customlib.assemble.events.AssembleBoardCreatedEvent;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -14,6 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AssembleBoard {
 

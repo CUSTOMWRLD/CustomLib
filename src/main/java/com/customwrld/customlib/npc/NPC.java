@@ -4,7 +4,6 @@ import com.customwrld.commonlib.util.Util;
 import com.customwrld.customlib.CustomLib;
 import com.customwrld.customlib.cache.ClazzCache;
 import com.customwrld.customlib.hologram.Hologram;
-import com.customwrld.commonlib.util.MC;
 import com.customwrld.customlib.util.NMSUtil;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
