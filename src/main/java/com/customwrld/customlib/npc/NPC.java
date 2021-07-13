@@ -37,6 +37,7 @@ public class NPC {
             hologram.direction = false;
             hologram.setLocation(location.clone().add(0, 2.1, 0));
             this.hologram = hologram;
+            this.hologram.render();
         }
 
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
