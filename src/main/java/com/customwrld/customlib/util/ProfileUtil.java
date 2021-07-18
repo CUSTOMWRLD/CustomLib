@@ -2,13 +2,17 @@ package com.customwrld.customlib.util;
 
 import com.customwrld.commonlib.modules.profile.Profile;
 import com.customwrld.customlib.CustomLib;
+import com.customwrld.customlib.events.AsyncProfileLoadEvent;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ProfileUtil {
     private ProfileUtil() {}
@@ -35,40 +39,17 @@ public class ProfileUtil {
         Profile profile = MetadataUtil.getValue(player, METADATA_KEY, CustomLib.getCustomLib(), null, Profile.class, false);
         if(profile == null && !onlyMetadata) {
             var future = Profile.getProfile(player.getName(), player.getUniqueId());
-            if(autoAssociate)
-                future.thenAccept(loadedProfile -> associateProfile(player, loadedProfile));
+
+            future.thenAccept(loadedProfile -> {
+                Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(loadedProfile));
+                if(autoAssociate)
+                    associateProfile(player, loadedProfile);
+            });
 
             return future;
         }
 
         return CompletableFuture.completedFuture(profile);
-    }
-
-    public static CompletableFuture<Profile> getProfile(String name, UUID uuid, boolean onlyMetadata, boolean autoAssociate) {
-        Player player = Bukkit.getPlayer(uuid);
-        if(player != null) {
-            return getAssociatedProfile(player, onlyMetadata, autoAssociate);
-        } else {
-            return Profile.getProfile(name, uuid);
-        }
-    }
-
-    public static CompletableFuture<Profile> getProfile(UUID uuid, boolean onlyMetadata, boolean autoAssociate) {
-        Player player = Bukkit.getPlayer(uuid);
-        if(player != null) {
-            return getAssociatedProfile(player, onlyMetadata, autoAssociate);
-        } else {
-            return Profile.getProfile(uuid);
-        }
-    }
-
-    public static CompletableFuture<Profile> getProfile(String name, boolean onlyMetadata, boolean autoAssociate) {
-        Player player = Bukkit.getPlayer(name);
-        if(player != null) {
-            return getAssociatedProfile(player, onlyMetadata, autoAssociate);
-        } else {
-            return Profile.getProfile(name);
-        }
     }
 
     /**
@@ -82,16 +63,189 @@ public class ProfileUtil {
         return getAssociatedProfile(player, false, true);
     }
 
-    public static CompletableFuture<Profile> getProfile(String name, UUID uuid) {
-        return getProfile(name, uuid, false, true);
+    public static CompletableFuture<Map<Player, Profile>> getAssociatedProfiles(List<Player> players, boolean onlyMetadata, boolean autoAssociate) {
+        List<Player> cacheRequired = new ArrayList<>();
+        Map<Player, Profile> profiles = new HashMap<>();
+
+        for(Player player : players) {
+            Profile profile = MetadataUtil.getValue(player, METADATA_KEY, CustomLib.getCustomLib(), null, Profile.class, false);
+            if(profile != null) {
+                profiles.put(player, profile);
+            } else if(!onlyMetadata) {
+                cacheRequired.add(player);
+            }
+        }
+
+        if(cacheRequired.isEmpty())
+            return CompletableFuture.completedFuture(profiles);
+
+        CompletableFuture<Map<Player, Profile>> future = new CompletableFuture<>();
+
+        Bukkit.getScheduler().runTaskAsynchronously(CustomLib.getCustomLib(), () -> {
+            var profileFuture = Profile.getProfiles(PlayerUtil.getAll(cacheRequired));
+
+            profileFuture.thenAccept(loadedProfiles -> {
+                Map<Player, Profile> loadedPlayers = new HashMap<>();
+
+                for(Profile loadedProfile : loadedProfiles) {
+                    Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(loadedProfile));
+
+                    var player = getPlayerFromProfile(cacheRequired, loadedProfile);
+                    if(autoAssociate)
+                        associateProfile(player, loadedProfile);
+
+                    loadedPlayers.put(player, loadedProfile);
+                }
+
+                future.complete(loadedPlayers);
+            });
+        });
+
+        return future;
     }
 
-    public static CompletableFuture<Profile> getProfile(UUID uuid) {
-        return getProfile(uuid, false, true);
+    public static CompletableFuture<Map<Player, Profile>> getAssociatedProfiles(List<Player> players) {
+        return getAssociatedProfiles(players, false, true);
     }
 
-    public static CompletableFuture<Profile> getProfile(String name) {
-        return getProfile(name, false, true);
+    /**
+     * Checks if the player is online, and if so, gets the player and uses {@linkplain ProfileUtil#getAssociatedProfile(Player, boolean, boolean)}.
+     * Otherwise uses {@linkplain ProfileUtil#getProfileByBoth(String, UUID, boolean, boolean)} if {@code onlyMetadata} is {@code false}.
+     */
+    public static CompletableFuture<Profile> getProfileFromOffline(OfflinePlayer offlinePlayer, boolean onlyMetadata, boolean autoAssociate) {
+        if(offlinePlayer.isOnline()) {
+            Player player = offlinePlayer.getPlayer();
+            if(player != null)
+                return getAssociatedProfile(player, onlyMetadata, autoAssociate);
+        }
+
+        return getProfileByBoth(offlinePlayer.getName(), offlinePlayer.getUniqueId(), onlyMetadata, autoAssociate);
+    }
+
+    public static CompletableFuture<Profile> getProfileFromOffline(OfflinePlayer offlinePlayer) {
+        return getProfileFromOffline(offlinePlayer, false, true);
+    }
+
+    public static CompletableFuture<Map<OfflinePlayer, Profile>> getProfilesFromOffline(List<OfflinePlayer> offlinePlayers,
+                                                                                        boolean onlyMetadata,
+                                                                                        boolean autoAssociate) {
+
+        List<CompletableFuture<Profile>> futures = new ArrayList<>();
+
+        for(OfflinePlayer offlinePlayer : offlinePlayers) {
+            if(offlinePlayer.isOnline()) {
+                Player player = offlinePlayer.getPlayer();
+                if(player != null)
+                    futures.add(getAssociatedProfile(player, onlyMetadata, autoAssociate));
+            }
+
+            futures.add(getProfileFromOffline(offlinePlayer, onlyMetadata, autoAssociate));
+        }
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(voidd -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toMap(profile -> getOfflineFromProfile(offlinePlayers, profile), profile -> profile)));
+    }
+
+    public static CompletableFuture<Map<OfflinePlayer, Profile>> getProfilesFromOffline(List<OfflinePlayer> offlinePlayers) {
+        return getProfilesFromOffline(offlinePlayers, false, true);
+    }
+
+    public static CompletableFuture<Profile> getProfileByBoth(String name, UUID uuid, boolean onlyMetadata, boolean autoAssociate) {
+        Player player = Bukkit.getPlayer(uuid);
+        if(player != null) {
+            return getAssociatedProfile(player, onlyMetadata, autoAssociate);
+        } else {
+            var future = Profile.getProfile(name, uuid);
+            future.thenAccept(profile -> Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(profile)));
+            return future;
+        }
+    }
+
+    public static CompletableFuture<Profile> getProfileByBoth(String name, UUID uuid) {
+        return getProfileByBoth(name, uuid, false, true);
+    }
+
+    public static CompletableFuture<List<Profile>> getProfilesByAny(List<String> names, List<UUID> uuids, boolean onlyMetadata, boolean autoAssociate) {
+        List<CompletableFuture<Profile>> futures = new ArrayList<>();
+
+        for(String name : names) {
+            var player = Bukkit.getPlayer(name);
+            if(player != null) {
+                futures.add(getAssociatedProfile(player, onlyMetadata, autoAssociate));
+            } else {
+                var future = Profile.getProfile(name);
+                future.thenAccept(profile -> Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(profile)));
+                futures.add(future);
+            }
+        }
+
+        for(UUID uuid : uuids) {
+            var player = Bukkit.getPlayer(uuid);
+            if(player != null) {
+                futures.add(getAssociatedProfile(player, onlyMetadata, autoAssociate));
+            } else {
+                var future = Profile.getProfile(uuid);
+                future.thenAccept(profile -> Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(profile)));
+                futures.add(future);
+            }
+        }
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(voidd -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()));
+    }
+
+    public static CompletableFuture<List<Profile>> getProfilesByAny(List<String> names, List<UUID> uuids) {
+        return getProfilesByAny(names, uuids, false, true);
+    }
+
+    public static CompletableFuture<Profile> getProfileById(UUID uuid, boolean onlyMetadata, boolean autoAssociate) {
+        Player player = Bukkit.getPlayer(uuid);
+        if(player != null) {
+            return getAssociatedProfile(player, onlyMetadata, autoAssociate);
+        } else {
+            var future = Profile.getProfile(uuid);
+            future.thenAccept(profile -> Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(profile)));
+            return future;
+        }
+    }
+
+    public static CompletableFuture<Profile> getProfileById(UUID uuid) {
+        return getProfileById(uuid, false, true);
+    }
+
+    public static CompletableFuture<Profile> getProfileByName(String name, boolean onlyMetadata, boolean autoAssociate) {
+        Player player = Bukkit.getPlayer(name);
+        if(player != null) {
+            return getAssociatedProfile(player, onlyMetadata, autoAssociate);
+        } else {
+            var future = Profile.getProfile(name);
+            future.thenAccept(profile -> Bukkit.getPluginManager().callEvent(new AsyncProfileLoadEvent(profile)));
+            return future;
+        }
+    }
+
+    public static CompletableFuture<Profile> getProfileByName(String name) {
+        return getProfileByName(name, false, true);
+    }
+
+    public static CompletableFuture<List<Profile>> getProfilesByNames(List<String> names, boolean onlyMetadata, boolean autoAssociate) {
+        return getProfilesByAny(names, new ArrayList<>(), onlyMetadata, autoAssociate);
+    }
+
+    public static CompletableFuture<List<Profile>> getProfilesByNames(List<String> names) {
+        return getProfilesByNames(names, false, true);
+    }
+
+    public static CompletableFuture<List<Profile>> getProfilesByIds(List<UUID> ids, boolean onlyMetadata, boolean autoAssociate) {
+        return getProfilesByAny(new ArrayList<>(), ids, onlyMetadata, autoAssociate);
+    }
+
+    public static CompletableFuture<List<Profile>> getProfilesByIds(List<UUID> ids) {
+        return getProfilesByIds(ids, false, true);
     }
 
     /**
@@ -115,4 +269,51 @@ public class ProfileUtil {
         player.removeMetadata(METADATA_KEY, CustomLib.getCustomLib());
     }
 
+    public static Player getPlayerFromProfile(@Nullable Collection<? extends Player> players,
+                                              final Profile profile) {
+
+        players = Objects.requireNonNullElse(players, Bukkit.getOnlinePlayers());
+
+        return players.stream()
+                .filter(player -> player.getUniqueId().equals(profile.getId()))
+                .findFirst().orElse(null);
+    }
+
+    public static OfflinePlayer getOfflineFromProfile(final Collection<OfflinePlayer> offlinePlayers,
+                                                      final Profile profile) {
+
+        return offlinePlayers.stream()
+                .filter(offlinePlayer -> offlinePlayer.getUniqueId().equals(profile.getId()))
+                .findFirst().orElse(null);
+    }
+
+    public static OfflinePlayer getOfflineFromProfiles(final Collection<OfflinePlayer> offlinePlayers,
+                                                       final Collection<Profile> profiles) {
+
+        return offlinePlayers.stream()
+                .filter(offlinePlayer -> profiles.stream().anyMatch(profile -> profile.getId().equals(offlinePlayer.getUniqueId())))
+                .findFirst().orElse(null);
+    }
+
+    public static Map<Profile, OfflinePlayer> getOfflinesFromProfiles(final Collection<OfflinePlayer> offlinePlayers,
+                                                                      final Collection<Profile> profiles) {
+
+        Map<Profile, OfflinePlayer> retrieved = new HashMap<>();
+
+        for(final var oIt = offlinePlayers.iterator(); oIt.hasNext();) {
+            var offlinePlayer = oIt.next();
+
+            for(final var pIt = profiles.iterator(); pIt.hasNext(); ) {
+                var profile = pIt.next();
+                if(profile.getId().equals(offlinePlayer.getUniqueId())) {
+                    oIt.remove();
+                    pIt.remove();
+                    retrieved.put(profile, offlinePlayer);
+                    break;
+                }
+            }
+        }
+
+        return retrieved;
+    }
 }
