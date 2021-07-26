@@ -16,11 +16,12 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
 
 public class NPC {
 
-    public String server;
+    public Map<String, String> metadata;
     public Location location;
     public Hologram hologram;
     public EntityPlayer entityNPC;
@@ -28,8 +29,8 @@ public class NPC {
     public GameProfile gameProfile;
     public int entityId;
 
-    public NPC(String server, Location location, String skin, String signature, Hologram hologram) {
-        this.server = server;
+    public NPC(Map<String, String> metadata, Location location, String skin, String signature, Hologram hologram) {
+        this.metadata = metadata;
         this.location = location;
         this.viewers = new HashSet<>();
 
